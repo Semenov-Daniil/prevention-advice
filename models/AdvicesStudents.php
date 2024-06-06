@@ -25,7 +25,7 @@ use Yii;
  */
 class AdvicesStudents extends \yii\db\ActiveRecord
 {
-    public $fio, $birthday, $group, $groups_id, $curator, $curators_id;
+    public $fio, $birthday, $group, $groups_id, $curator, $curators_id, $advice_date;
 
     /**
      * {@inheritdoc}
@@ -65,6 +65,7 @@ class AdvicesStudents extends \yii\db\ActiveRecord
             'fio' => 'ФИО',
             'birthday' => 'День рождения',
             'group' => 'Группа',
+            'groups_id' => 'Группа',
             'curator' => 'Куратор',
             'reason' => 'Причина вызова на СП',
             'result' => 'Результат СП',

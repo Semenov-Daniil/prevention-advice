@@ -14,7 +14,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'fio') ?>
+    <?= $form->field($model, 'fio')->label('ФИО Студента') ?>
 
     <?= $form->field($model, 'birthday')->textInput(['type' => 'date']) ?>
 

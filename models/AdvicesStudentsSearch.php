@@ -43,13 +43,20 @@ class AdvicesStudentsSearch extends AdvicesStudents
     {
         $students = AdvicesStudents::find()
             ->select([
-                'students_id',
+                'students_id'
             ])
             ->where(['advices_id' => $params['id']]);
-
-        $students_info = AdvicesStudents::find()
+        
+        $this_advice = AdvicesStudents::find()
             ->select([
-                'students_id as id',
+                'id as this_advice', 'students_id',
+            ])
+            ->where(['advices_id' => $params['id']]); 
+
+        $all_advices_students = AdvicesStudents::find()
+            ->select([
+                'this_advice as id',
+                '{{%advices_students}}.students_id',
                 '{{%students}}.fio as fio', 
                 '{{%students}}.birthday', 
                 '{{%groups}}.title as group', 
@@ -67,12 +74,13 @@ class AdvicesStudentsSearch extends AdvicesStudents
             ->innerJoin('{{%students}}', '{{%students}}.id = {{%advices_students}}.students_id')
             ->innerJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
             ->innerJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
-            ->where(['in', 'students_id', $students])
-            ->groupBy(['{{%advices_students}}.students_id'])
+            ->innerJoin(['this_advice' => $this_advice], 'this_advice.students_id = {{%advices_students}}.students_id')
+            ->where(['in', '{{%advices_students}}.students_id', $students])
+            ->groupBy(['{{%advices_students}}.students_id', 'this_advice'])
             ->asArray();
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $students_info,
+            'query' => $all_advices_students,
         ]);
 
         $dataProvider->sort->attributes['fio'] = [
@@ -101,12 +109,12 @@ class AdvicesStudentsSearch extends AdvicesStudents
             return $dataProvider;
         }
 
-        $students_info->andFilterWhere([
+        $all_advices_students->andFilterWhere([
             'birthday' => $this->birthday,
             'liquidation_period' => $this->liquidation_period,
         ]);
 
-        $students_info
+        $all_advices_students
             ->andFilterWhere(['like', '{{%students}}.fio', $this->fio])
             ->andFilterWhere(['like', '{{%groups}}.title', $this->group])
             ->andFilterWhere(['like', '{{%curators}}.fio', $this->curator])

@@ -57,11 +57,8 @@ class AdviceStudentController extends Controller
      */
     public function actionView($id)
     {
-        $searchModel = new AdvicesStudentsSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-
         return $this->render('view', [
-            // 'model' => $this->getInfoStudent($id, ),
+            'model' => $this->findModel($id),
         ]);
     }
 
@@ -148,18 +145,12 @@ class AdviceStudentController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = AdvicesStudents::findOne(['id' => $id])) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    protected function getInfoStudent($advice_id, $student_id)
-    {
         $model = AdvicesStudents::find()
             ->select([
-                'students_id as id',
+                '{{%advices_students}}.id',
+                'advices_id',
+                'date as advice_date',
+                'students_id',
                 '{{%students}}.fio as fio', 
                 '{{%students}}.birthday', 
                 '{{%groups}}.title as group', 
@@ -174,10 +165,11 @@ class AdviceStudentController extends Controller
                 'liquidation_period' ,
                 'memo',
             ])
+            ->innerJoin('{{%advices}}', '{{%advices}}.id = {{%advices_students}}.advices_id')
             ->innerJoin('{{%students}}', '{{%students}}.id = {{%advices_students}}.students_id')
             ->innerJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
             ->innerJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
-            ->where(['advice_id' => $advice_id, 'students_id' => $student_id])
+            ->where(['{{%advices_students}}.id' => $id])
             ->one();
 
         if ($model !== null) {

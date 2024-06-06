@@ -27,8 +27,6 @@ $this->title = 'Совет Профилактики';
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
             [
                 'attribute' => 'date',
                 'value' => function ($data) {

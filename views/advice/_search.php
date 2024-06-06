@@ -16,7 +16,6 @@ use yii\widgets\ActiveForm;
     <?php $form = ActiveForm::begin([
         'action' => ['view', ...$options],
         'method' => 'get',
-        // 'options' => ['class' => 'd-flex']
     ]); ?>
 
     <?= $form->field($model, 'fio')->label('ФИО Cтудента') ?>

@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use app\controllers\SiteController;
-use app\models\AdvicesStudents;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
@@ -22,8 +21,8 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Обновить дату', ['update', 'id' => $dataAdvice->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $dataAdvice->id], [
+        <?= Html::a('Обновить дату', ['update', 'id' => Yii::$app->request->get('id')], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Удалить', ['delete', 'id' =>Yii::$app->request->get('id')], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Вы точно хотите удалить данную запись?',
@@ -44,12 +43,7 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
         ],
     ]) ?>
 
-<?php
-$string = "2024-06-06<br>2024-06-06";
-
-?>
-
-    <?php echo $this->render('_search', ['model' => $searchStudents, 'options' => ['id' => $dataAdvice->id]]); ?>
+    <?php echo $this->render('_search', ['model' => $searchStudents, 'options' => ['id' => Yii::$app->request->get('id')]]); ?>
 
     <?= GridView::widget([
         'options' => ['class' => 'd-flex flex-column align-items-center'],
@@ -95,8 +89,8 @@ $string = "2024-06-06<br>2024-06-06";
         ],
     ]); ?>
 
-    <?=Html::a('Добавить запись', ['advice-student/create', 'advice' => $dataAdvice->id], ['class' => 'btn btn-primary']);?>
-    <?=Html::a('Экспортировать в CSV', ['site/export', 'id' => $dataAdvice->id], ['class' => 'btn btn-outline-secondary']);?>
+    <?=Html::a('Добавить запись', ['advice-student/create', 'advice' => Yii::$app->request->get('id')], ['class' => 'btn btn-primary']);?>
+    <?=Html::a('Экспортировать в CSV', ['site/export', 'advice' => Yii::$app->request->get('id')], ['class' => 'btn btn-outline-secondary']);?>
 
 
 </div>
