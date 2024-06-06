@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\Advices;
 use app\models\AdvicesStudents;
 use app\models\AdvicesStudentsSearch;
+use app\models\Students;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -55,8 +57,11 @@ class AdviceStudentController extends Controller
      */
     public function actionView($id)
     {
+        $searchModel = new AdvicesStudentsSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            // 'model' => $this->getInfoStudent($id, ),
         ]);
     }
 
@@ -65,13 +70,30 @@ class AdviceStudentController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate()
+    public function actionCreate($advice)
     {
         $model = new AdvicesStudents();
+        $dataAdvice = Advices::findOne($advice);
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            $data = ($this->request->post())['AdvicesStudents'];
+
+            if ($model->load($data, '')) { 
+                if (empty($student = Students::find()->where(['fio' => $data['fio'], 'birthday' => $data['birthday'], 'groups_id' => $data['groups_id']])->asArray()->all())) {
+                    $student = new Students();
+                    $student->load($data, '');
+                    $student->save();
+                    $students_id = $student->id;
+                } else {
+                    $students_id = $student[0]['id'];
+                }
+
+                $model->advices_id = $advice;
+                $model->students_id = $students_id;
+
+                if ($model->save()) {
+                    return $this->redirect(['advice/view', 'id' => $advice]);
+                }
             }
         } else {
             $model->loadDefaultValues();
@@ -79,6 +101,7 @@ class AdviceStudentController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'dataAdvice' => $dataAdvice,
         ]);
     }
 
@@ -126,6 +149,38 @@ class AdviceStudentController extends Controller
     protected function findModel($id)
     {
         if (($model = AdvicesStudents::findOne(['id' => $id])) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    protected function getInfoStudent($advice_id, $student_id)
+    {
+        $model = AdvicesStudents::find()
+            ->select([
+                'students_id as id',
+                '{{%students}}.fio as fio', 
+                '{{%students}}.birthday', 
+                '{{%groups}}.title as group', 
+                '{{%curators}}.fio as curator',
+                'reason',
+                'result',
+                'protocol',
+                'decree',
+                'remark',
+                'reprimand',
+                'note',
+                'liquidation_period' ,
+                'memo',
+            ])
+            ->innerJoin('{{%students}}', '{{%students}}.id = {{%advices_students}}.students_id')
+            ->innerJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
+            ->innerJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
+            ->where(['advice_id' => $advice_id, 'students_id' => $student_id])
+            ->one();
+
+        if ($model !== null) {
             return $model;
         }
 

@@ -81,107 +81,61 @@ class SiteController extends Controller
         $searchModel = new AdvicesSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        $dataProvider->setSort([
-            'defaultOrder' => [
-                'date' => SORT_DESC,
-            ]
-        ]);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
 
-    /**
-     * Displays a single Advices model.
-     * @param int $id ID
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
+    public function actionExport($id)
     {
-        $searchModel = new AdvicesStudentsSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $searchStudents = new AdvicesStudentsSearch();
+        $dataStudents = $searchStudents->search($this->request->queryParams)->getModels();
 
+        $date = Advices::findOne($id)->date;
 
-        // var_dump($students);die;
+        $fileName = 'СП ' . $this->dateFormation($date) . '.csv';
 
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-            'students' => $dataProvider,
-        ]);
+        $text = 'Совет Профилактики ' . $this->dateFormation($date) . ';' . PHP_EOL;
+
+        // var_dump(implode(';', $this->lable(array_keys($dataStudents[0]))));die;
+        
+        $text .= implode(';', $this->lable(array_keys($dataStudents[0]))) . PHP_EOL;
+        
+        foreach ($dataStudents as $fields) {
+            $text .= implode(';', $fields) . PHP_EOL;
+        }
+
+        $response = Yii::$app->response;
+
+        $response->headers->add('Content-Type', 'text/csv');
+        $response->headers->add('Content-Disposition', "attachment; filename=$fileName");
+
+        $response->sendContentAsFile(iconv('UTF-8', 'Windows-1251', $text), $fileName)->send();
     }
 
-    /**
-     * Creates a new Advices model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
-    public function actionCreate()
+    public function lable($array)
     {
-        $model = new Advices();
+        $lable = [
+            'dishes_title' => 'Название блюда',
+            'products_title' => 'Название продукта',
+            'category' => 'Категория продукта',
+            'pre_processing' => 'Предварительная обработка продутка',
+            'count_spices' => 'Количество пряных продуктов',
+            'dishes_category' => 'Категория блюда',
+            'priority' => 'Очередь добавления',
+            'calorie' => 'Калорийность'
+        ];
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+        foreach ($array as $key => $val) {
+            foreach ($lable as $key2 => $val2) {
+                if ($val == $key2) {
+                    $array[$key] = $val2;
+                    continue;
+                }
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Updates an existing Advices model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $id ID
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Deletes an existing Advices model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $id ID
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }
-
-    /**
-     * Finds the Advices model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $id ID
-     * @return Advices the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Advices::findOne(['id' => $id])) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
+        return $array;
     }
 }

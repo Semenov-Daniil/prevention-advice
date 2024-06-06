@@ -25,6 +25,8 @@ use Yii;
  */
 class AdvicesStudents extends \yii\db\ActiveRecord
 {
+    public $fio, $birthday, $group, $groups_id, $curator, $curators_id;
+
     /**
      * {@inheritdoc}
      */
@@ -39,12 +41,15 @@ class AdvicesStudents extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['advices_id', 'students_id', 'reason', 'result', 'protocol', 'decree', 'remark', 'reprimand', 'note', 'liquidation_period', 'memo'], 'required'],
-            [['advices_id', 'students_id'], 'integer'],
+            [['advices_id', 'students_id', 'fio', 'birthday', 'groups_id',], 'required'],
+            [['advices_id', 'students_id', 'groups_id'], 'integer'],
             [['reason', 'result', 'protocol', 'decree', 'remark', 'reprimand', 'note', 'memo'], 'string'],
-            [['liquidation_period'], 'safe'],
+            [['fio'], 'string', 'max' => 255],
+            [['liquidation_period', 'birthday'], 'safe'],
             [['advices_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advices::class, 'targetAttribute' => ['advices_id' => 'id']],
             [['students_id'], 'exist', 'skipOnError' => true, 'targetClass' => Students::class, 'targetAttribute' => ['students_id' => 'id']],
+            [['groups_id'], 'exist', 'skipOnError' => true, 'targetClass' => Groups::class, 'targetAttribute' => ['groups_id' => 'id']],
+            [['curators_id'], 'exist', 'skipOnError' => true, 'targetClass' => Curators::class, 'targetAttribute' => ['curators_id' => 'id']],
         ];
     }
 
@@ -57,6 +62,10 @@ class AdvicesStudents extends \yii\db\ActiveRecord
             'id' => 'ID',
             'advices_id' => 'Advices ID',
             'students_id' => 'Students ID',
+            'fio' => 'ФИО',
+            'birthday' => 'День рождения',
+            'group' => 'Группа',
+            'curator' => 'Куратор',
             'reason' => 'Причина вызова на СП',
             'result' => 'Результат СП',
             'protocol' => 'Протокол',

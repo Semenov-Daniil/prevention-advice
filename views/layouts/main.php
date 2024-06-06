@@ -39,8 +39,6 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
         'items' => [
-            ['label' => 'СП', 'url' => ['/advice/index']],
-            ['label' => 'СП-Студенты', 'url' => ['/advice-student/index']],
             ['label' => 'Кураторы', 'url' => ['/curator/index']],
             ['label' => 'Группы', 'url' => ['/group/index']],
             ['label' => 'Студенты', 'url' => ['/student/index']],

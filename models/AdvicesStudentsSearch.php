@@ -18,8 +18,8 @@ class AdvicesStudentsSearch extends AdvicesStudents
     public function rules()
     {
         return [
-            [['id', 'advices_id', 'students_id'], 'integer'],
-            [['reason', 'result', 'protocol', 'decree', 'remark', 'reprimand', 'note', 'liquidation_period', 'memo'], 'safe'],
+            [['fio', 'group', 'curator'], 'string', 'max' => 255],
+            [['reason', 'result', 'protocol', 'decree', 'remark', 'reprimand', 'note', 'liquidation_period', 'memo', 'birthday'], 'safe'],
         ];
     }
 
@@ -41,81 +41,83 @@ class AdvicesStudentsSearch extends AdvicesStudents
      */
     public function search($params)
     {
-        $query = AdvicesStudents::find()
-            ->select('students_id')
-            ->where(['advices_id' => $params['id']]);
-
         $students = AdvicesStudents::find()
             ->select([
-                '{{%students}}.id as students_id', 
-                '{{%students}}.fio', 
+                'students_id',
+            ])
+            ->where(['advices_id' => $params['id']]);
+
+        $students_info = AdvicesStudents::find()
+            ->select([
+                'students_id as id',
+                '{{%students}}.fio as fio', 
                 '{{%students}}.birthday', 
                 '{{%groups}}.title as group', 
                 '{{%curators}}.fio as curator',
-                'reason',
-                'result',
-                'protocol',
-                'decree',
-                'remark',
-                'reprimand',
-                'note',
-                'liquidation_period',
-                'memo',
+                'reason' => new \yii\db\Expression('GROUP_CONCAT(reason SEPARATOR \'\n \')'),
+                'result' => new \yii\db\Expression('GROUP_CONCAT(result SEPARATOR \'\n \')'),
+                'protocol' => new \yii\db\Expression('GROUP_CONCAT(protocol SEPARATOR \'\n \')'),
+                'decree' => new \yii\db\Expression('GROUP_CONCAT(decree SEPARATOR \'\n \')'),
+                'remark' => new \yii\db\Expression('GROUP_CONCAT(remark SEPARATOR \'\n \')'),
+                'reprimand' => new \yii\db\Expression('GROUP_CONCAT(reprimand SEPARATOR \'\n \')'),
+                'note' => new \yii\db\Expression('GROUP_CONCAT(note SEPARATOR \'\n \')'),
+                'liquidation_period' => new \yii\db\Expression('GROUP_CONCAT(liquidation_period SEPARATOR \'\n \')'),
+                'memo' => new \yii\db\Expression('GROUP_CONCAT(memo SEPARATOR \'\n \')'),
             ])
             ->innerJoin('{{%students}}', '{{%students}}.id = {{%advices_students}}.students_id')
             ->innerJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
             ->innerJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
-            ->where(['advices_id' => $params['id']]);
-
-        
-
-        $full_students = AdvicesStudents::find()
-            ->select([
-                'fio', 
-                'birthday', 
-                'group', 
-                'curator',
-                'reason' => new \yii\db\Expression('GROUP_CONCAT(reason SEPARATOR \'; \')'),
-                'result' => new \yii\db\Expression('GROUP_CONCAT(result SEPARATOR \'; \')'),
-                'protocol' => new \yii\db\Expression('GROUP_CONCAT(protocol SEPARATOR \'; \')'),
-                'decree' => new \yii\db\Expression('GROUP_CONCAT(decree SEPARATOR \'; \')'),
-                'remark' => new \yii\db\Expression('GROUP_CONCAT(remark SEPARATOR \'; \')'),
-                'reprimand' => new \yii\db\Expression('GROUP_CONCAT(reprimand SEPARATOR \'; \')'),
-                'note' => new \yii\db\Expression('GROUP_CONCAT(note SEPARATOR \'; \')'),
-                'liquidation_period' => new \yii\db\Expression('GROUP_CONCAT(liquidation_period SEPARATOR \'; \')'),
-                'memo' => new \yii\db\Expression('GROUP_CONCAT(memo SEPARATOR \'; \')'),
-            ])
-            ->from(['st' => $students])
-            ->where('students_id = st.students_id')
-            ->groupBy(['{{%advices_students}}.students_id']);
-
-        var_dump('<pre>', $full_students->all());die;
-
-        // add conditions that should always apply here
+            ->where(['in', 'students_id', $students])
+            ->groupBy(['{{%advices_students}}.students_id'])
+            ->asArray();
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => $students_info,
         ]);
 
-        $params = [
-            'advices_id' => 0,
+        $dataProvider->sort->attributes['fio'] = [
+            'asc' => ['fio' => SORT_ASC],
+            'desc' => ['fio' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['birthday'] = [
+            'asc' => ['birthday' => SORT_ASC],
+            'desc' => ['birthday' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['group'] = [
+            'asc' => ['group' => SORT_ASC],
+            'desc' => ['group' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['curator'] = [
+            'asc' => ['curator' => SORT_ASC],
+            'desc' => ['curator' => SORT_DESC],
         ];
 
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
 
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-            'advices_id' => $this->advices_id,
-            'students_id' => $this->students_id,
+        $students_info->andFilterWhere([
+            'birthday' => $this->birthday,
             'liquidation_period' => $this->liquidation_period,
         ]);
+
+        $students_info
+            ->andFilterWhere(['like', '{{%students}}.fio', $this->fio])
+            ->andFilterWhere(['like', '{{%groups}}.title', $this->group])
+            ->andFilterWhere(['like', '{{%curators}}.fio', $this->curator])
+            ->andFilterWhere(['like', 'reason', $this->reason])
+            ->andFilterWhere(['like', 'result', $this->result])
+            ->andFilterWhere(['like', 'protocol', $this->protocol])
+            ->andFilterWhere(['like', 'decree', $this->decree])
+            ->andFilterWhere(['like', 'remark', $this->remark])
+            ->andFilterWhere(['like', 'reprimand', $this->reprimand])
+            ->andFilterWhere(['like', 'note', $this->note])
+            ->andFilterWhere(['like', 'memo', $this->memo]);
 
         return $dataProvider;
     }

@@ -5,8 +5,7 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var app\models\Advices $model */
 
-$this->title = 'Создание Совета Профилактики';
-$this->params['breadcrumbs'][] = ['label' => 'Советы Профилактики', 'url' => ['index']];
+$this->title = 'Создать Совет Профилактики';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="advices-create">

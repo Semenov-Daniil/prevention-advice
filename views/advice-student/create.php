@@ -1,12 +1,14 @@
 <?php
 
+use app\controllers\SiteController;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var app\models\AdvicesStudents $model */
+/** @var app\models\Advices $dataAdvice */
 
 $this->title = 'Создание записи';
-$this->params['breadcrumbs'][] = ['label' => 'СП-Студенты', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => SiteController::dateFormation($dataAdvice->date), 'url' => ['advice/view', 'id' => $dataAdvice->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="advices-students-create">

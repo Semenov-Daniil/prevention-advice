@@ -1,5 +1,7 @@
 <?php
 
+use app\models\Curators;
+use app\models\Groups;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -12,10 +14,12 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'advices_id')->textInput() ?>
+    <?= $form->field($model, 'fio') ?>
 
-    <?= $form->field($model, 'students_id')->textInput() ?>
+    <?= $form->field($model, 'birthday')->textInput(['type' => 'date']) ?>
 
+    <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->indexBy('id')->column(),['prompt'=>'Выберите Группу']) ?>
+    
     <?= $form->field($model, 'reason')->textarea(['rows' => 6]) ?>
 
     <?= $form->field($model, 'result')->textarea(['rows' => 6]) ?>
@@ -30,12 +34,12 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'note')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'liquidation_period')->textInput() ?>
+    <?= $form->field($model, 'liquidation_period')->textInput(['type' => 'date']) ?>
 
     <?= $form->field($model, 'memo')->textarea(['rows' => 6]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

@@ -14,12 +14,12 @@ use yii\grid\GridView;
 $this->title = 'Совет Профилактики';
 
 ?>
-<div class="advices-index">
+<div class="index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Создать Совет Профилактики', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать Совет Профилактики', ['advice/create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -38,9 +38,10 @@ $this->title = 'Совет Профилактики';
 
             [
                 'class' => ActionColumn::className(),
+                'controller' => 'advices',
                 'urlCreator' => function ($action, Advices $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
+                    return Url::toRoute(['advice/' . $action, 'id' => $model->id]);
+                }
             ],
         ],
     ]); ?>

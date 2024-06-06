@@ -49,9 +49,13 @@ class AdvicesSearch extends Advices
             'pagination' => [
                 'pageSize' => 20,
             ],
+            'sort' => [
+                'defaultOrder' => [
+                    'date' => SORT_DESC,
+                ]
+            ]
         ]);
 
-        
         $this->load($params);
         
         if (!$this->validate()) {

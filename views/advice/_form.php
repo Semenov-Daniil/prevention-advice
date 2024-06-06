@@ -6,8 +6,6 @@ use yii\widgets\ActiveForm;
 /** @var yii\web\View $this */
 /** @var app\models\Advices $model */
 /** @var yii\widgets\ActiveForm $form */
-
-$this->title = 'Создание Советы Профилактики';
 ?>
 
 <div class="advices-form">
