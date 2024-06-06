@@ -41,7 +41,7 @@ class Advices extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'date' => 'Дата Совета Профилактики',
+            'date' => 'Дата',
         ];
     }
 

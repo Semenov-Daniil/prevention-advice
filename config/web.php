@@ -18,13 +18,6 @@ $config = [
             'cookieValidationKey' => 'token',
             'baseUrl' => ''
         ],
-        'formatter' => [
-            'class' => 'yii\i18n\Formatter',
-            'dateFormat' => 'php:d F Y',
-            'datetimeFormat' => 'php:d F Y H:i:s',
-            'timeFormat' => 'php:H:i:s',
-            'locale' => 'ru-RU',
-        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

@@ -1,14 +1,49 @@
 <?php
 
+use app\models\Advices;
+use app\controllers\SiteController;
+use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\grid\ActionColumn;
+use yii\grid\GridView;
+
 /** @var yii\web\View $this */
+/** @var app\models\AdvicesSearch $searchModel */
+/** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Главная';
+$this->title = 'Совет Профилактики';
+
 ?>
-<div class="site-index">
+<div class="advices-index">
 
-    <div class="jumbotron text-center bg-transparent mt-5 mb-5">
-        <h1 class="display-4 mb-5">Совет Профилактики</h1>
+    <h1><?= Html::encode($this->title) ?></h1>
 
-        <p><a class="btn btn-lg btn-success" href="">Создать СП</a></p>
-    </div>
+    <p>
+        <?= Html::a('Создать Совет Профилактики', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
+
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+
+            [
+                'attribute' => 'date',
+                'value' => function ($data) {
+                    return SiteController::dateFormation($data->date);
+                },
+            ],
+
+            [
+                'class' => ActionColumn::className(),
+                'urlCreator' => function ($action, Advices $model, $key, $index, $column) {
+                    return Url::toRoute([$action, 'id' => $model->id]);
+                 }
+            ],
+        ],
+    ]); ?>
+
+
 </div>
