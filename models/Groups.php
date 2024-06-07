@@ -16,6 +16,7 @@ use Yii;
  */
 class Groups extends \yii\db\ActiveRecord
 {
+    public $curator_fio;
     /**
      * {@inheritdoc}
      */
@@ -30,9 +31,10 @@ class Groups extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'curators_id'], 'required'],
+            [['title'], 'required'],
             [['curators_id'], 'integer'],
             [['title'], 'string', 'max' => 255],
+            [['curator_fio'], 'string'],
             [['curators_id'], 'exist', 'skipOnError' => true, 'targetClass' => Curators::class, 'targetAttribute' => ['curators_id' => 'id']],
         ];
     }
@@ -46,6 +48,7 @@ class Groups extends \yii\db\ActiveRecord
             'id' => 'ID',
             'title' => 'Название',
             'curators_id' => 'Куратор ID',
+            'curator_fio' => 'ФИО Куратора',
         ];
     }
 

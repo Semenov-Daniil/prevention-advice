@@ -18,7 +18,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'birthday')->textInput(['type' => 'date']) ?>
 
-    <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->indexBy('id')->column(),['prompt'=>'Выберите Группу']) ?>
+    <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->indexBy('id')->column(),['prompt'=>'Выберите Группу', 'options' => [$model->groups_id => ['selected' => true]]]) ?>
     
     <?= $form->field($model, 'reason')->textarea(['rows' => 6]) ?>
 
@@ -34,7 +34,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'note')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'liquidation_period')->textInput(['type' => 'date']) ?>
+    <?= $form->field($model, 'liquidation_period')->textarea(['rows' => 6]) ?>
 
     <?= $form->field($model, 'memo')->textarea(['rows' => 6]) ?>
 

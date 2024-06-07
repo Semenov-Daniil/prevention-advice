@@ -25,13 +25,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             'fio',
-            'birthday',
-            'groups_id',
+            [
+                'attribute' => 'birthday',
+                'format' => ['date', 'php: d.m.Y']
+            ],
+            'groups_title',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Students $model, $key, $index, $column) {

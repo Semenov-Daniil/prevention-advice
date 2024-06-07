@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Groups;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -14,9 +15,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'fio')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'birthday')->textInput() ?>
+    <?= $form->field($model, 'birthday')->textInput(['type' => 'date']) ?>
 
-    <?= $form->field($model, 'groups_id')->textInput() ?>
+    <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->indexBy('id')->column(),['prompt'=>'Выберите Группу', 'options' => [$model->groups_id => ['selected' => true]]]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

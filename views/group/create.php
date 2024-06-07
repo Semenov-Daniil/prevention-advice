@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var app\models\Groups $model */
 
-$this->title = 'Обновить Группу';
-$this->params['breadcrumbs'][] = ['label' => 'Groups', 'url' => ['index']];
+$this->title = 'Создать Группу';
+$this->params['breadcrumbs'][] = ['label' => 'Группы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="groups-create">

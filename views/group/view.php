@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /** @var app\models\Groups $model */
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Groups', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Группа', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'title',
+            'curator_fio'
         ],
     ]) ?>
 
