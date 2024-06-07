@@ -71,7 +71,7 @@ class GroupController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['index', 'id' => $model->id]);
             }
         } else {
             $model->loadDefaultValues();
@@ -125,7 +125,14 @@ class GroupController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Groups::findOne(['id' => $id])) !== null) {
+        $model = Groups::find()
+            ->select([
+                '{{%groups}}.id', 'title', 'curators_id', '{{%curators}}.fio as curator_fio'
+            ])
+            ->leftJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
+            ->where(['{{%groups}}.id' => $id])
+            ->one();
+        if ($model !== null) {
             return $model;
         }
 

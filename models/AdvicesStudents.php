@@ -25,7 +25,7 @@ use Yii;
  */
 class AdvicesStudents extends \yii\db\ActiveRecord
 {
-    public $fio, $birthday, $group, $groups_id, $curator, $curators_id, $advice_date;
+    public $fio, $birthday, $group, $groups_id, $curator, $curators_id, $advice_date, $date;
 
     /**
      * {@inheritdoc}
@@ -43,9 +43,9 @@ class AdvicesStudents extends \yii\db\ActiveRecord
         return [
             [['advices_id', 'students_id', 'fio', 'birthday', 'groups_id',], 'required'],
             [['advices_id', 'students_id', 'groups_id'], 'integer'],
-            [['reason', 'result', 'protocol', 'decree', 'remark', 'reprimand', 'note', 'memo'], 'string'],
+            [['reason', 'result', 'protocol', 'decree', 'remark', 'reprimand', 'note', 'memo', 'liquidation_period'], 'string'],
             [['fio'], 'string', 'max' => 255],
-            [['liquidation_period', 'birthday'], 'safe'],
+            [['birthday'], 'safe'],
             [['advices_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advices::class, 'targetAttribute' => ['advices_id' => 'id']],
             [['students_id'], 'exist', 'skipOnError' => true, 'targetClass' => Students::class, 'targetAttribute' => ['students_id' => 'id']],
             [['groups_id'], 'exist', 'skipOnError' => true, 'targetClass' => Groups::class, 'targetAttribute' => ['groups_id' => 'id']],
@@ -76,6 +76,7 @@ class AdvicesStudents extends \yii\db\ActiveRecord
             'note' => 'Примечание',
             'liquidation_period' => 'Срок ликвидации',
             'memo' => 'Служебная записка от куратора',
+            'date' => 'Дата СП',
         ];
     }
 

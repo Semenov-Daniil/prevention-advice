@@ -39,19 +39,19 @@ class AdvicesStudentsSearch extends AdvicesStudents
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($advice_id, $params)
     {
         $students = AdvicesStudents::find()
             ->select([
                 'students_id'
             ])
-            ->where(['advices_id' => $params['id']]);
+            ->where(['advices_id' => $advice_id]);
         
         $this_advice = AdvicesStudents::find()
             ->select([
                 'id as this_advice', 'students_id',
             ])
-            ->where(['advices_id' => $params['id']]); 
+            ->where(['advices_id' => $advice_id]); 
 
         $all_advices_students = AdvicesStudents::find()
             ->select([
@@ -72,8 +72,8 @@ class AdvicesStudentsSearch extends AdvicesStudents
                 'memo' => new \yii\db\Expression('GROUP_CONCAT(memo SEPARATOR \'\n \')'),
             ])
             ->innerJoin('{{%students}}', '{{%students}}.id = {{%advices_students}}.students_id')
-            ->innerJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
-            ->innerJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
+            ->leftJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
+            ->leftJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
             ->innerJoin(['this_advice' => $this_advice], 'this_advice.students_id = {{%advices_students}}.students_id')
             ->where(['in', '{{%advices_students}}.students_id', $students])
             ->groupBy(['{{%advices_students}}.students_id', 'this_advice'])
@@ -111,7 +111,6 @@ class AdvicesStudentsSearch extends AdvicesStudents
 
         $all_advices_students->andFilterWhere([
             'birthday' => $this->birthday,
-            'liquidation_period' => $this->liquidation_period,
         ]);
 
         $all_advices_students
@@ -125,8 +124,88 @@ class AdvicesStudentsSearch extends AdvicesStudents
             ->andFilterWhere(['like', 'remark', $this->remark])
             ->andFilterWhere(['like', 'reprimand', $this->reprimand])
             ->andFilterWhere(['like', 'note', $this->note])
-            ->andFilterWhere(['like', 'memo', $this->memo]);
+            ->andFilterWhere(['like', 'memo', $this->memo])
+            ->andFilterWhere(['like', 'liquidation_period', $this->liquidation_period]);
 
         return $dataProvider;
+    }
+
+    public function searchAdvice($students_id, $params)
+    {
+        $all_advices_students = AdvicesStudents::find()
+            ->select([
+                '{{%advices_students}}.id', 'date', 'reason', 'result', 'protocol', 'decree', 'remark', 'reprimand', 'note', 'liquidation_period', 'memo'
+            ])
+            ->innerJoin('{{%advices}}', '{{%advices}}.id = {{%advices_students}}.advices_id')
+            ->where(['students_id' => $students_id])
+            ->asArray();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $all_advices_students,
+        ]);
+
+        $dataProvider->sort->attributes['date'] = [
+            'date' => ['date' => SORT_ASC],
+            'date' => ['date' => SORT_DESC],
+        ];
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            return $dataProvider;
+        }
+
+        return $dataProvider;
+    }
+
+    public function exportData($id)
+    {
+        $students = AdvicesStudents::find()
+        ->select([
+            'students_id'
+        ])
+        ->where(['advices_id' => $id]);
+    
+        $this_advice = AdvicesStudents::find()
+            ->select([
+                'id as this_advice', 'students_id',
+            ])
+            ->where(['advices_id' => $id]); 
+
+        $all_advices_students = AdvicesStudents::find()
+            ->select([
+                '{{%students}}.fio as fio', 
+                '{{%students}}.birthday', 
+                '{{%groups}}.title as group', 
+                '{{%curators}}.fio as curator',
+                'reason' => new \yii\db\Expression('GROUP_CONCAT(reason SEPARATOR \'\n \')'),
+                'result' => new \yii\db\Expression('GROUP_CONCAT(result SEPARATOR \'\n \')'),
+                'protocol' => new \yii\db\Expression('GROUP_CONCAT(protocol SEPARATOR \'\n \')'),
+                'decree' => new \yii\db\Expression('GROUP_CONCAT(decree SEPARATOR \'\n \')'),
+                'remark' => new \yii\db\Expression('GROUP_CONCAT(remark SEPARATOR \'\n \')'),
+                'reprimand' => new \yii\db\Expression('GROUP_CONCAT(reprimand SEPARATOR \'\n \')'),
+                'note' => new \yii\db\Expression('GROUP_CONCAT(note SEPARATOR \'\n \')'),
+                'liquidation_period' => new \yii\db\Expression('GROUP_CONCAT(liquidation_period SEPARATOR \'\n \')'),
+                'memo' => new \yii\db\Expression('GROUP_CONCAT(memo SEPARATOR \'\n \')'),
+            ])
+            ->innerJoin('{{%students}}', '{{%students}}.id = {{%advices_students}}.students_id')
+            ->leftJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
+            ->leftJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
+            ->innerJoin(['this_advice' => $this_advice], 'this_advice.students_id = {{%advices_students}}.students_id')
+            ->where(['in', '{{%advices_students}}.students_id', $students])
+            ->groupBy(['{{%advices_students}}.students_id', 'this_advice'])
+            ->asArray()
+            ->all();
+
+        foreach($all_advices_students as $key=>$students) {
+            $date = date_create_from_format('Y-m-d', $students['birthday']);
+            if ($date) {
+                $formattedDate = date_format($date, 'd.m.Y');
+                $students['birthday'] = $formattedDate;
+            }
+            $all_advices_students[$key] = $students;
+        }  
+
+        return $all_advices_students;
     }
 }

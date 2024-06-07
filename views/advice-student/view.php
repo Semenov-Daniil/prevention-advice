@@ -89,7 +89,6 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'liquidation_period',
                 'label' => 'Срок ликвидации',
-                'format' => ['date', 'php: d.m.Y']
             ],
             
             [

@@ -17,6 +17,8 @@ use Yii;
  */
 class Students extends \yii\db\ActiveRecord
 {
+    public $groups_title;
+
     /**
      * {@inheritdoc}
      */
@@ -34,7 +36,7 @@ class Students extends \yii\db\ActiveRecord
             [['fio', 'birthday', 'groups_id'], 'required'],
             [['birthday'], 'safe'],
             [['groups_id'], 'integer'],
-            [['fio'], 'string', 'max' => 255],
+            [['fio', 'groups_title'], 'string', 'max' => 255],
             [['groups_id'], 'exist', 'skipOnError' => true, 'targetClass' => Groups::class, 'targetAttribute' => ['groups_id' => 'id']],
         ];
     }
@@ -49,6 +51,7 @@ class Students extends \yii\db\ActiveRecord
             'fio' => 'ФИО',
             'birthday' => 'День рождения',
             'groups_id' => 'Группа ID',
+            'groups_title' => 'Группа',
         ];
     }
 

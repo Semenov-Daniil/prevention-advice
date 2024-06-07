@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Curators;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -14,7 +15,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'curators_id')->textInput() ?>
+    <?= $form->field($model, 'curators_id')->label('Куратор')->dropdownList(Curators::find()->select(['fio'])->indexBy('id')->column(),['prompt'=>'Выберите Куратора']) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /** @var app\models\Groups $model */
 
 $this->title = 'Обновление Группы: ' . $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Groups', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Группы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

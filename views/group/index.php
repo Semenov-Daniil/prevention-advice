@@ -18,18 +18,19 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Создание Группы', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать Группу', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             'title',
+            'curator_fio',
+
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Groups $model, $key, $index, $column) {

@@ -40,13 +40,27 @@ class GroupsSearch extends Groups
      */
     public function search($params)
     {
-        $query = Groups::find();
+        $query = Groups::find()
+            ->select([
+                '{{%groups}}.id', 'title', 'curators_id', '{{%curators}}.fio as curator_fio'
+            ])
+            ->leftJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id');
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'title' => SORT_ASC,
+                ]
+            ]
         ]);
+
+        $dataProvider->sort->attributes['curator_fio'] = [
+            'asc' => ['curator_fio' => SORT_ASC],
+            'desc' => ['curator_fio' => SORT_DESC],
+        ];
 
         $this->load($params);
 
@@ -62,7 +76,9 @@ class GroupsSearch extends Groups
             'curators_id' => $this->curators_id,
         ]);
 
-        $query->andFilterWhere(['like', 'title', $this->title]);
+        $query
+            ->andFilterWhere(['like', 'title', $this->title])
+            ->andFilterWhere(['like', 'curator_fio', $this->curator_fio]);
 
         return $dataProvider;
     }

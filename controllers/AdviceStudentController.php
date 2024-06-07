@@ -113,8 +113,25 @@ class AdviceStudentController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost) {
+            $data = ($this->request->post())['AdvicesStudents'];
+
+            if ($model->load($data, '')) { 
+                if (empty($student = Students::find()->where(['id' => $model->students_id, 'fio' => $data['fio'], 'birthday' => $data['birthday'], 'groups_id' => $data['groups_id']])->asArray()->all())) {
+                    $student = new Students();
+                    $student->load($data, '');
+                    $student->save();
+                    $students_id = $student->id;
+                } else {
+                    $students_id = $student[0]['id'];
+                }
+
+                $model->students_id = $students_id;
+
+                if ($model->save()) {
+                    return $this->redirect(['advice/view', 'id' => $model->advices_id]);
+                }
+            }
         }
 
         return $this->render('update', [
@@ -153,6 +170,7 @@ class AdviceStudentController extends Controller
                 'students_id',
                 '{{%students}}.fio as fio', 
                 '{{%students}}.birthday', 
+                '{{%groups}}.id as groups_id', 
                 '{{%groups}}.title as group', 
                 '{{%curators}}.fio as curator',
                 'reason',

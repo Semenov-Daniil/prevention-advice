@@ -40,13 +40,27 @@ class StudentsSearch extends Students
      */
     public function search($params)
     {
-        $query = Students::find();
+        $query = Students::find()
+            ->select([
+                '{{%students}}.id', 'fio', 'birthday', '{{%groups}}.title as groups_title'
+            ])
+            ->innerJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id');
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'fio' => SORT_ASC,
+                ]
+            ]
         ]);
+
+        $dataProvider->sort->attributes['groups_title'] = [
+            'asc' => ['groups_title' => SORT_ASC],
+            'desc' => ['groups_title' => SORT_DESC],
+        ];
 
         $this->load($params);
 
@@ -63,7 +77,9 @@ class StudentsSearch extends Students
             'groups_id' => $this->groups_id,
         ]);
 
-        $query->andFilterWhere(['like', 'fio', $this->fio]);
+        $query
+            ->andFilterWhere(['like', 'fio', $this->fio])
+            ->andFilterWhere(['like', 'groups_title', $this->groups_title]);
 
         return $dataProvider;
     }

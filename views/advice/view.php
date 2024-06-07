@@ -50,7 +50,13 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
         'dataProvider' => $dataStudents,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'fio',
+            [
+                'attribute' => 'fio',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return \yii\helpers\Html::a($model['fio'], ['student/view', 'id' => $model['students_id']]);
+                },
+            ],
             [
                 'attribute' => 'birthday',
                 'format' => ['date', 'php: d.m.Y']
@@ -64,20 +70,7 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
             'remark:ntext',
             'reprimand:ntext',
             'note:ntext',
-            [
-                'attribute' => 'liquidation_period',
-                'format' => 'ntext',
-                'value' => function ($data) {
-                    $result = '';
-                    if ($data['liquidation_period']) {
-                        $dates = explode("\n", $data['liquidation_period']);
-                        foreach ($dates as $date) {
-                            $result .= date("d.m.Y", strtotime($date)) . "\n";
-                        }
-                    }
-                    return $result;
-                },
-            ],
+            'liquidation_period:ntext',
             'memo:ntext',
 
             [
@@ -90,7 +83,7 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
     ]); ?>
 
     <?=Html::a('Добавить запись', ['advice-student/create', 'advice' => Yii::$app->request->get('id')], ['class' => 'btn btn-primary']);?>
-    <?=Html::a('Экспортировать в CSV', ['site/export', 'advice' => Yii::$app->request->get('id')], ['class' => 'btn btn-outline-secondary']);?>
+    <?=Html::a('Экспортировать в CSV', ['site/export', 'id' => Yii::$app->request->get('id')], ['class' => 'btn btn-outline-secondary']);?>
 
 
 </div>

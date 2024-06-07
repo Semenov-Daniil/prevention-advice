@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\AdvicesStudents;
+use app\models\AdvicesStudentsSearch;
 use app\models\Students;
 use app\models\StudentsSearch;
 use yii\web\Controller;
@@ -55,8 +57,12 @@ class StudentController extends Controller
      */
     public function actionView($id)
     {
+        $searchModel = new AdvicesStudentsSearch();
+        $dataProvider = $searchModel->searchAdvice($id, $this->request->queryParams);
+
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'dataProvider' => $dataProvider
         ]);
     }
 
@@ -125,7 +131,15 @@ class StudentController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Students::findOne(['id' => $id])) !== null) {
+        $model = Students::find()
+            ->select([
+                '{{%students}}.id', 'fio', 'birthday', '{{%groups}}.title as groups_title', 'groups_id'
+            ])
+            ->innerJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
+            ->where(['{{%students}}.id' => $id])
+            ->one();
+
+        if ($model !== null) {
             return $model;
         }
 

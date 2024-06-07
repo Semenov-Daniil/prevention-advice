@@ -57,7 +57,7 @@ class AdviceController extends Controller
     public function actionView($id)
     {
         $searchStudents = new AdvicesStudentsSearch();
-        $dataStudents = $searchStudents->search($this->request->queryParams);
+        $dataStudents = $searchStudents->search($id, $this->request->queryParams);
 
         return $this->render('view', [
             'dataAdvice' => $this->findModel($id),
@@ -119,7 +119,7 @@ class AdviceController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['/']);
     }
 
     /**

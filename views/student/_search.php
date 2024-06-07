@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Groups;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -17,13 +18,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'fio') ?>
 
-    <?= $form->field($model, 'birthday') ?>
+    <?= $form->field($model, 'birthday')->textInput(['type' => 'date']) ?>
 
-    <?= $form->field($model, 'groups_id') ?>
+    <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->indexBy('id')->column(),['prompt'=>'Выберите Группу']) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Поиск', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Обновить', ['class' => 'btn btn-outline-secondary']) ?>
+        <?= Html::resetButton('Сбросить', ['class' => 'btn btn-outline-secondary', 'onclick' => 'window.location.replace(window.location.pathname);']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
