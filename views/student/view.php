@@ -48,7 +48,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
             [
                 'attribute' => 'date',
-                'format' => ['date', 'php: d.m.Y']
+                'format' => ['raw'],
+                'value' => function ($model) {
+                    return \yii\helpers\Html::a(date_format(date_create($model['date']), 'd.m.Y'), ['advice/view', 'id' => $model['advices_id']]);
+                },
             ],
             'reason:ntext',
             'result:ntext',

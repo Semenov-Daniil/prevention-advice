@@ -134,7 +134,7 @@ class AdvicesStudentsSearch extends AdvicesStudents
     {
         $all_advices_students = AdvicesStudents::find()
             ->select([
-                '{{%advices_students}}.id', 'date', 'reason', 'result', 'protocol', 'decree', 'remark', 'reprimand', 'note', 'liquidation_period', 'memo'
+                '{{%advices_students}}.id', 'advices_id', 'date', 'reason', 'result', 'protocol', 'decree', 'remark', 'reprimand', 'note', 'liquidation_period', 'memo'
             ])
             ->innerJoin('{{%advices}}', '{{%advices}}.id = {{%advices_students}}.advices_id')
             ->where(['students_id' => $students_id])
