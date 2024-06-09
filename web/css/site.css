@@ -98,3 +98,7 @@ select {
 input[type='date'] {
     cursor: pointer;
 }
+
+.attention-text {
+    color: #c55;
+}

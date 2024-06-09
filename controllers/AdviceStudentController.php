@@ -6,6 +6,7 @@ use app\models\Advices;
 use app\models\AdvicesStudents;
 use app\models\AdvicesStudentsSearch;
 use app\models\Students;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -31,22 +32,6 @@ class AdviceStudentController extends Controller
                 ],
             ]
         );
-    }
-
-    /**
-     * Lists all AdvicesStudents models.
-     *
-     * @return string
-     */
-    public function actionIndex()
-    {
-        $searchModel = new AdvicesStudentsSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
     }
 
     /**
@@ -83,6 +68,16 @@ class AdviceStudentController extends Controller
                     $students_id = $student->id;
                 } else {
                     $students_id = $student[0]['id'];
+
+                    if (!empty($advice_student = AdvicesStudents::find()->select('id')->where(['advices_id'=> $advice, 'students_id' => $students_id])->one())) {
+                        (Yii::$app->session)['advice_students_data'] = $data;
+                        return $this->render('create', [
+                            'model' => $model,
+                            'dataAdvice' => $dataAdvice,
+                            'attention' => true,
+                            'advice_student' => $advice_student->id
+                        ]);
+                    }
                 }
 
                 $model->advices_id = $advice;
@@ -99,7 +94,28 @@ class AdviceStudentController extends Controller
         return $this->render('create', [
             'model' => $model,
             'dataAdvice' => $dataAdvice,
+            'attention' => false
         ]);
+    }
+
+    public function actionAdding($id, $advice_id)
+    {
+        $model = $this->findModel($id);
+        $dataAdvice = Advices::findOne($advice_id);
+        $data = (Yii::$app->session)['advice_students_data'];
+
+        if (!empty($data)) {
+            foreach ($data as $key=>$advice) {
+                if ($key !== 'fio' && $key !== 'birthday' && $key !== 'groups_id') {
+                    $model->$key = $model->$key . "\n" . $advice;
+                }
+            }
+            
+            if ($model->save()) {
+                (Yii::$app->session)->destroy();
+                return $this->redirect(['advice/view', 'id' => $advice_id]);
+            }
+        }
     }
 
     /**
@@ -113,24 +129,23 @@ class AdviceStudentController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost) {
-            $data = ($this->request->post())['AdvicesStudents'];
+        $data = $this->request->isPost ? ($this->request->post())['AdvicesStudents'] : (Yii::$app->session)['advice_students_data'];
 
-            if ($model->load($data, '')) { 
-                if (empty($student = Students::find()->where(['id' => $model->students_id, 'fio' => $data['fio'], 'birthday' => $data['birthday'], 'groups_id' => $data['groups_id']])->asArray()->all())) {
-                    $student = new Students();
-                    $student->load($data, '');
-                    $student->save();
-                    $students_id = $student->id;
-                } else {
-                    $students_id = $student[0]['id'];
-                }
+        if ($model->load($data, '')) { 
+            if (empty($student = Students::find()->where(['id' => $model->students_id, 'fio' => $data['fio'], 'birthday' => $data['birthday'], 'groups_id' => $data['groups_id']])->asArray()->all())) {
+                $student = new Students();
+                $student->load($data, '');
+                $student->save();
+                $students_id = $student->id;
+            } else {
+                $students_id = $student[0]['id'];
+            }
 
-                $model->students_id = $students_id;
+            $model->students_id = $students_id;
 
-                if ($model->save()) {
-                    return $this->redirect(['advice/view', 'id' => $model->advices_id]);
-                }
+            if ($model->save()) {
+                (Yii::$app->session)->destroy();
+                return $this->redirect(['advice/view', 'id' => $model->advices_id]);
             }
         }
 

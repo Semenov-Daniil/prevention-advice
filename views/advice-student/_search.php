@@ -16,8 +16,6 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <? //$form->field($student, 'fio') ?>
-
     <div class="form-group">
         <?= Html::submitButton('Поиск', ['class' => 'btn btn-primary']) ?>
         <?= Html::resetButton('Обновить', ['class' => 'btn btn-outline-secondary']) ?>
