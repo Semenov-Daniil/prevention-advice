@@ -6,9 +6,9 @@ use app\controllers\SiteController;
 /** @var yii\web\View $this */
 /** @var app\models\Advices $model */
 
-$this->title = 'Обновить время';
+$this->title = 'Обновить дату';
 $this->params['breadcrumbs'][] = ['label' => SiteController::dateFormation($model->date), 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Обновить время';
+$this->params['breadcrumbs'][] = 'Обновить дату';
 ?>
 <div class="advices-update">
 
@@ -16,6 +16,7 @@ $this->params['breadcrumbs'][] = 'Обновить время';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'btn_title' => 'Обновить'
     ]) ?>
 
 </div>

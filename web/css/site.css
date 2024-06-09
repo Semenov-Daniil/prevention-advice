@@ -86,3 +86,15 @@ a.desc:after {
 .form-group {
     margin-bottom: 1rem;
 }
+
+.flex-1 {
+    flex: 1;
+}
+
+select {
+    cursor: pointer;
+}
+
+input[type='date'] {
+    cursor: pointer;
+}

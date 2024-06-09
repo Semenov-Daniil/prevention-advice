@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Curators;
+use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -18,10 +19,30 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Создать Куратора', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать Куратора', ['create'], ['class' => 'mt-3 btn btn-success']) ?>
     </p>
 
-    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+    <div class="curators-search">
+        <div class="col-lg-6">
+            <?php $form = ActiveForm::begin([
+                'id' => 'search-curators-form',
+                'action' => ['index'],
+                'method' => 'get',
+                'options' => [
+                    'class' => 'd-flex flex-row align-items-end gap-3'
+                ]
+            ]); ?>
+            
+            <?= $form->field($searchModel, 'fio', ['options' => ['class' => 'mb-3 flex-fill']])->textInput() ?>
+    
+            <div class="form-group d-flex gap-1">
+                <?= Html::submitButton('Поиск', ['class' => 'btn btn-primary']) ?>
+                <?= Html::resetButton('Сбросить', ['class' => 'btn btn-outline-secondary', 'onclick' => 'window.location.replace(window.location.pathname);']) ?>
+            </div>
+    
+            <?php ActiveForm::end(); ?>
+        </div>
+    </div>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

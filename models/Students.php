@@ -33,7 +33,7 @@ class Students extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fio', 'birthday', 'groups_id'], 'required'],
+            [['fio', 'birthday'], 'required'],
             [['birthday'], 'safe'],
             [['groups_id'], 'integer'],
             [['fio', 'groups_title'], 'string', 'max' => 255],
@@ -50,7 +50,7 @@ class Students extends \yii\db\ActiveRecord
             'id' => 'ID',
             'fio' => 'ФИО',
             'birthday' => 'День рождения',
-            'groups_id' => 'Группа ID',
+            'groups_id' => 'Группа',
             'groups_title' => 'Группа',
         ];
     }

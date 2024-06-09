@@ -1,9 +1,8 @@
 <?php
 
-use app\models\Curators;
 use app\models\Groups;
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap5\ActiveForm;
+use yii\bootstrap5\Html;
 
 /** @var yii\web\View $this */
 /** @var app\models\AdvicesStudents $model */
@@ -14,9 +13,11 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'fio')->label('ФИО Студента') ?>
-
-    <?= $form->field($model, 'birthday')->textInput(['type' => 'date']) ?>
+    <div class="d-flex flex-wrapp gap-4 mb-3">
+        <?= $form->field($model, 'fio', ['options' => ['class' => 'flex-1']])->label('ФИО Студента') ?>
+    
+        <?= $form->field($model, 'birthday', ['options' => ['class' => 'flex-1']])->textInput(['type' => 'date']) ?>
+    </div>
 
     <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->indexBy('id')->column(),['prompt'=>'Выберите Группу', 'options' => [$model->groups_id => ['selected' => true]]]) ?>
     
@@ -39,7 +40,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'memo')->textarea(['rows' => 6]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton($btn_title, ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

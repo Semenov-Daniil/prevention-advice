@@ -174,6 +174,7 @@ class AdvicesStudentsSearch extends AdvicesStudents
 
         $all_advices_students = AdvicesStudents::find()
             ->select([
+                "CONCAT('') as id",
                 '{{%students}}.fio as fio', 
                 '{{%students}}.birthday', 
                 '{{%groups}}.title as group', 
@@ -197,12 +198,15 @@ class AdvicesStudentsSearch extends AdvicesStudents
             ->asArray()
             ->all();
 
+        $id_str = 1;
         foreach($all_advices_students as $key=>$students) {
             $date = date_create_from_format('Y-m-d', $students['birthday']);
             if ($date) {
                 $formattedDate = date_format($date, 'd.m.Y');
                 $students['birthday'] = $formattedDate;
             }
+            $students['id'] = $id_str;
+            $id_str++;
             $all_advices_students[$key] = $students;
         }  
 

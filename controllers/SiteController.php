@@ -16,7 +16,7 @@ use yii\web\NotFoundHttpException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class SiteController extends Controller
 {
@@ -58,18 +58,18 @@ class SiteController extends Controller
         $formattedDate = (new DateTime($date))->format('j F, Y');
 
         $months = [
-            'January' => 'Январь',
-            'February' => 'Февраль',
-            'March' => 'Март',
-            'April' => 'Апрель',
-            'May' => 'Май',
-            'June' => 'Июнь',
-            'July' => 'Июль',
-            'August' => 'Август',
-            'September' => 'Сентябрь',
-            'October' => 'Октябрь',
-            'November' => 'Ноябрь',
-            'December' => 'Декабрь'
+            'January' => 'Января',
+            'February' => 'Февраля',
+            'March' => 'Марта',
+            'April' => 'Апреля',
+            'May' => 'Мая',
+            'June' => 'Июня',
+            'July' => 'Июля',
+            'August' => 'Августа',
+            'September' => 'Сентября',
+            'October' => 'Октября',
+            'November' => 'Ноября',
+            'December' => 'Декабря'
         ];
 
         return strtr($formattedDate, $months);
@@ -96,37 +96,59 @@ class SiteController extends Controller
         $searchStudents = new AdvicesStudentsSearch();
         $dataStudents = $searchStudents->exportData($id);
 
+        $table_title = ['№п/п', 'ФИО', 'Дата рождения', 'Группа', 'Куратор', 'Причина вызова на СП', 'Результат совета профилактики', 'Протокол', 'Приказ', 'Замечание', 'Выговор', 'Примечание', 'Срок ликвидации', 'Служебная записка от куратора'];
         $date = Advices::findOne($id)->date;
-        $length_table = count($dataStudents[0]);    
+        $length_table = count($table_title);    
         $columnLetter = $this->getExcelColumnLetter($length_table);
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+        $spreadsheet->getDefaultStyle()->getFont()->setName('Times New Roman');
+        $spreadsheet->getDefaultStyle()->getFont()->setSize(11);
+
         $sheet->setCellValue('A1', 'Совет Профилактики ' . $this->dateFormation($date));
-        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1')->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_BOTTOM);
+        $sheet->getStyle('A1')->getFont()
+            ->setBold(true)
+            ->setSize(18);
         $sheet->mergeCells('A1:' . $columnLetter . '1');
 
         $column = 'A';
-        foreach ($this->lable(array_keys($dataStudents[0])) as $header) {
+        foreach ($table_title as $header) {
             $sheet->setCellValue($column.'2', $header);
+            $sheet->getStyle($column.'2')->getFont()
+                ->setBold(true)
+                ->setSize(12);
+            $sheet->getStyle($column.'2')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
             $column++;
         }
 
         $row = 3;
         foreach ($dataStudents as $rowData) {
             $column = 'A';
-            foreach ($rowData as $cellData) {
+            foreach ($rowData as $key=>$cellData) {
                 $sheet->setCellValue($column.$row, $cellData);
+                $sheet->getStyle($column.$row)->getAlignment()
+                    ->setVertical(Alignment::VERTICAL_BOTTOM)
+                    ->setWrapText(true);
+
+                if ($key == 'birthday') {
+                    $spreadsheet->getActiveSheet()->getStyle($column.$row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
+                }
+
                 $column++;
             }
+            $sheet->getRowDimension($row)->setRowHeight(-1);
             $row++;
         }
 
         for ($i = 'A'; $i <= $columnLetter; $i++) {
             $sheet->getColumnDimension($i)->setAutoSize(true);
         }
-
+            
         $styleArray = [
             'borders' => [
                 'allBorders' => [
@@ -136,11 +158,18 @@ class SiteController extends Controller
         ];
         $sheet->getStyle('A1:' . $columnLetter . (2 + count($dataStudents)))->applyFromArray($styleArray);
 
+        $sheet->setAutoFilter('A2:' . $columnLetter . (2 + count($dataStudents)));
+
         $writer = new Xlsx($spreadsheet);
 
         $filename =  'СП ' . $this->dateFormation($date) . '.xlsx';
+        $dir = Yii::getAlias('@app/advices_files/');
+
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
         
-        $tempFilePath = Yii::getAlias('@app/runtime/' . $filename);
+        $tempFilePath = $dir . $filename;
         $writer->save($tempFilePath);
 
         Yii::$app->response->sendFile($tempFilePath)->send();
@@ -156,40 +185,5 @@ class SiteController extends Controller
         }
         
         return $columnLetter;
-    }
-
-    public function lable($array)
-    {
-        $lable = [
-            'id' => 'ID',
-            'advices_id' => 'Advices ID',
-            'students_id' => 'Students ID',
-            'fio' => 'ФИО',
-            'birthday' => 'День рождения',
-            'group' => 'Группа',
-            'groups_id' => 'Группа',
-            'curator' => 'Куратор',
-            'reason' => 'Причина вызова на СП',
-            'result' => 'Результат СП',
-            'protocol' => 'Протокол',
-            'decree' => 'Приказ',
-            'remark' => 'Замечание',
-            'reprimand' => 'Выговор',
-            'note' => 'Примечание',
-            'liquidation_period' => 'Срок ликвидации',
-            'memo' => 'Служебная записка от куратора',
-            'date' => 'Дата СП',
-        ];
-
-        foreach ($array as $key => $val) {
-            foreach ($lable as $key2 => $val2) {
-                if ($val == $key2) {
-                    $array[$key] = $val2;
-                    continue;
-                }
-            }
-        }
-
-        return $array;
     }
 }

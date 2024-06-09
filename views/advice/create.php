@@ -1,5 +1,7 @@
 <?php
 
+use yii\bootstrap5\ActiveForm;
+use yii\bootstrap5\Html as Bootstrap5Html;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
@@ -14,6 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'btn_title' => 'Создать'
     ]) ?>
 
 </div>

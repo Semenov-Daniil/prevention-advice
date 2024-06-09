@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
-    <h1>Советы Профилактики студента</h1>
+    <h1 class="my-3">Советы Профилактики студента</h1>
 
     <?= GridView::widget([
         'options' => ['class' => 'd-flex flex-column align-items-center'],

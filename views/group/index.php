@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Groups;
+use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -18,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Создать Группу', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать Группу', ['create'], ['class' => 'mt-3 btn btn-success']) ?>
     </p>
 
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>

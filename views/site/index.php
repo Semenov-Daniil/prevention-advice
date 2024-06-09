@@ -2,6 +2,7 @@
 
 use app\models\Advices;
 use app\controllers\SiteController;
+use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -19,10 +20,30 @@ $this->title = 'Совет Профилактики';
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Создать Совет Профилактики', ['advice/create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать Совет Профилактики', ['advice/create'], ['class' => 'mt-3 btn btn-success']) ?>
     </p>
 
-    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+    <div class="advices-search">
+        <div class="col-lg-5">
+            <?php $form = ActiveForm::begin([
+                'id' => 'search-advice-form',
+                'action' => ['index'],
+                'method' => 'get',
+                'options' => [
+                    'class' => 'd-flex flex-row align-items-end gap-3'
+                ]
+            ]); ?>
+            
+            <?= $form->field($searchModel, 'date', ['options' => ['class' => 'mb-3 flex-fill']])->label('Найти по дате')->textInput(['type' => 'date']) ?>
+    
+            <div class="form-group d-flex gap-3">
+                <?= Html::submitButton('Поиск', ['class' => 'btn btn-primary']) ?>
+                <?= Html::resetButton('Сбросить', ['class' => 'btn btn-outline-secondary', 'onclick' => 'window.location.replace(window.location.pathname);']) ?>
+            </div>
+    
+            <?php ActiveForm::end(); ?>
+        </div>
+    </div>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
