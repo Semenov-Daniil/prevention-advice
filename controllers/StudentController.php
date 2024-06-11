@@ -6,6 +6,8 @@ use app\models\AdvicesStudents;
 use app\models\AdvicesStudentsSearch;
 use app\models\Students;
 use app\models\StudentsSearch;
+use app\models\Users;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -73,6 +75,10 @@ class StudentController extends Controller
      */
     public function actionCreate()
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+
         $model = new Students();
 
         if ($this->request->isPost) {
@@ -97,6 +103,10 @@ class StudentController extends Controller
      */
     public function actionUpdate($id)
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
@@ -117,6 +127,10 @@ class StudentController extends Controller
      */
     public function actionDelete($id)
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+        
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

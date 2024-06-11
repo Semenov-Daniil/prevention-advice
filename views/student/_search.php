@@ -24,7 +24,7 @@ use yii\widgets\ActiveForm;
 
         <?= $form->field($model, 'birthday')->textInput(['type' => 'date']) ?>
 
-        <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->indexBy('id')->column(),['prompt'=>'Выберите Группу']) ?>
+        <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->orderBy(['title' => SORT_ASC])->indexBy('id')->column(),['prompt'=>'Выберите Группу']) ?>
     
         <div class="form-group d-flex gap-3">
             <?= Html::submitButton('Поиск', ['class' => 'btn btn-primary']) ?>

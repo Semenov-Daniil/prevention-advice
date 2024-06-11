@@ -6,6 +6,7 @@ use app\models\Advices;
 use app\models\AdvicesStudents;
 use app\models\AdvicesStudentsSearch;
 use app\models\Students;
+use app\models\Users;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -54,6 +55,10 @@ class AdviceStudentController extends Controller
      */
     public function actionCreate($advice)
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+
         $model = new AdvicesStudents();
         $dataAdvice = Advices::findOne($advice);
 
@@ -100,6 +105,10 @@ class AdviceStudentController extends Controller
 
     public function actionAdding($id, $advice_id)
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+
         $model = $this->findModel($id);
         $dataAdvice = Advices::findOne($advice_id);
         $data = (Yii::$app->session)['advice_students_data'];
@@ -127,6 +136,10 @@ class AdviceStudentController extends Controller
      */
     public function actionUpdate($id)
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+
         $model = $this->findModel($id);
 
         $data = $this->request->isPost ? ($this->request->post())['AdvicesStudents'] : (Yii::$app->session)['advice_students_data'];
@@ -163,6 +176,10 @@ class AdviceStudentController extends Controller
      */
     public function actionDelete($id)
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+        
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

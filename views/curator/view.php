@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Users;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -15,16 +16,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= 'Куратор: ' . $model->fio ?></h1>
 
-    <p>
-        <?= Html::a('Обновить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Вы точно хотите удалить данную запись?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+    <? if (!Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin'): ?>
+        <p>
+            <?= Html::a('Обновить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => 'Вы точно хотите удалить данную запись?',
+                    'method' => 'post',
+                ],
+            ]) ?>
+        </p>
+    <? endif; ?>
 
     <?= DetailView::widget([
         'model' => $model,

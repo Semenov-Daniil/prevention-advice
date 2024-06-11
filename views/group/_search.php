@@ -23,7 +23,7 @@ use yii\widgets\ActiveForm;
             
             <?= $form->field($model, 'title', ['options' => ['class' => 'form-group flex-1']]) ?>
         
-            <?= $form->field($model, 'curators_id', ['options' => ['class' => 'form-group flex-1']])->label('Куратор')->dropdownList(Curators::find()->select(['fio'])->indexBy('id')->column(),['prompt'=>'Выберите Куратора']) ?>
+            <?= $form->field($model, 'curators_id', ['options' => ['class' => 'form-group flex-1']])->label('Куратор')->dropdownList(Curators::find()->select(['fio'])->orderBy(['fio' => SORT_ASC])->indexBy('id')->column(),['prompt'=>'Выберите Куратора']) ?>
         
             <div class="form-group d-flex gap-1">
                 <?= Html::submitButton('Поиск', ['class' => 'btn btn-primary']) ?>

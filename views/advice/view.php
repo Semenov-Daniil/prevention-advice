@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use app\controllers\SiteController;
+use app\models\Users;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
@@ -20,6 +21,7 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
 
     <h1><?= Html::encode($this->title) ?></h1>
 
+    <? if (!Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin'): ?>
     <p>
         <?= Html::a('Обновить дату', ['update', 'id' => Yii::$app->request->get('id')], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Удалить', ['delete', 'id' =>Yii::$app->request->get('id')], [
@@ -30,6 +32,7 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
             ],
         ]) ?>
     </p>
+    <? endif; ?>
 
     <?= DetailView::widget([
         'model' => $dataAdvice,
@@ -45,45 +48,56 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
 
     <?php echo $this->render('_search', ['model' => $searchStudents, 'options' => ['id' => Yii::$app->request->get('id')]]); ?>
 
-    <?= GridView::widget([
-        'options' => ['class' => 'd-flex flex-column align-items-center'],
-        'dataProvider' => $dataStudents,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            [
-                'attribute' => 'fio',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return \yii\helpers\Html::a($model['fio'], ['student/view', 'id' => $model['students_id']]);
-                },
+    <div>
+        <?= GridView::widget([
+            'options' => ['class' => 'd-flex flex-column align-items-center'],
+            'dataProvider' => $dataStudents,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                [
+                    'attribute' => 'fio',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return (!Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin') ? Html::a($model['fio'], ['student/view', 'id' => $model['students_id']]) : $model['fio'];
+                    },
+                ],
+                [
+                    'attribute' => 'birthday',
+                    'format' => ['date', 'php: d.m.Y']
+                ],
+                'group',
+                'curator',
+                'reason:ntext',
+                'result:ntext',
+                'protocol:ntext',
+                'decree:ntext',
+                'remark:ntext',
+                'reprimand:ntext',
+                'note:ntext',
+                'liquidation_period:ntext',
+                'memo:ntext',
+    
+                [
+                    'class' => ActionColumn::className(),
+                    'urlCreator' => function ($action, $dataStudents, $key, $index, $column) {
+                        return Url::toRoute(['advice-student/' . $action, 'id' => $dataStudents['id']]);
+                    },
+                    'visibleButtons' => [
+                        'update' => function ($model, $key, $index) {
+                            return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
+                        },
+                        'delete' => function ($model, $key, $index) {
+                            return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
+                        },
+                    ]
+                ],
             ],
-            [
-                'attribute' => 'birthday',
-                'format' => ['date', 'php: d.m.Y']
-            ],
-            'group',
-            'curator',
-            'reason:ntext',
-            'result:ntext',
-            'protocol:ntext',
-            'decree:ntext',
-            'remark:ntext',
-            'reprimand:ntext',
-            'note:ntext',
-            'liquidation_period:ntext',
-            'memo:ntext',
-
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, $dataStudents, $key, $index, $column) {
-                    return Url::toRoute(['advice-student/' . $action, 'id' => $dataStudents['id']]);
-                }
-            ],
-        ],
-    ]); ?>
-
-    <?=Html::a('Добавить запись', ['advice-student/create', 'advice' => Yii::$app->request->get('id')], ['class' => 'btn btn-primary']);?>
-    <?=Html::a('Экспортировать в CSV', ['site/export', 'id' => Yii::$app->request->get('id')], ['class' => 'btn btn-outline-secondary']);?>
-
-
+        ]); ?>
+    
+        <? if (!Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin'): ?>
+            <?=Html::a('Добавить запись', ['advice-student/create', 'advice' => Yii::$app->request->get('id')], ['class' => 'btn btn-primary']);?>
+        <? endif; ?>
+    
+        <?=Html::a('Экспортировать в CSV', ['site/export', 'id' => Yii::$app->request->get('id')], ['class' => 'btn btn-outline-secondary']);?>
+    </div>
 </div>

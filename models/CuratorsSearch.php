@@ -40,7 +40,7 @@ class CuratorsSearch extends Curators
      */
     public function search($params)
     {
-        $query = Curators::find();
+        $query = Curators::find()->orderBy(['fio' => SORT_ASC]);
 
         // add conditions that should always apply here
 

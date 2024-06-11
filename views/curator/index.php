@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Curators;
+use app\models\Users;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -18,9 +19,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Создать Куратора', ['create'], ['class' => 'mt-3 btn btn-success']) ?>
-    </p>
+    <? if (!Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin'): ?>
+        <p>
+            <?= Html::a('Создать Куратора', ['create'], ['class' => 'mt-3 btn btn-success']) ?>
+        </p>
+    <? endif; ?>
 
     <div class="curators-search">
         <div class="col-lg-6">
@@ -54,7 +57,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Curators $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
-                 }
+                },
+                'visibleButtons' => [
+                    'update' => function ($model, $key, $index) {
+                        return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
+                    },
+                    'delete' => function ($model, $key, $index) {
+                        return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
+                    },
+                ]
             ],
         ],
     ]); ?>

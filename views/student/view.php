@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Users;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
@@ -19,22 +20,27 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Обновить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Вы точно хотите удалить данную запись?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+    <? if (!Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin'): ?>
+        <p>
+            <?= Html::a('Обновить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => 'Вы точно хотите удалить данную запись?',
+                    'method' => 'post',
+                ],
+            ]) ?>
+        </p>
+    <? endif; ?>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             'fio',
-            'birthday',
+            [      
+                'label' => 'День рождения',
+                'value' => date('d.m.Y', strtotime($model->birthday)),
+            ],
             'groups_title',
         ],
     ]) ?>
@@ -67,7 +73,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, $dataProvider, $key, $index, $column) {
                     return Url::toRoute(['advice-student/' . $action, 'id' => $dataProvider['id']]);
-                }
+                },
+                'visibleButtons' => [
+                    'update' => function ($model, $key, $index) {
+                        return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
+                    },
+                    'delete' => function ($model, $key, $index) {
+                        return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
+                    },
+                ]
             ],
         ],
     ]); ?>

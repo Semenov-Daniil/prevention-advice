@@ -16,7 +16,7 @@ use yii\bootstrap5\Html;
         
             <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
         
-            <?= $form->field($model, 'curators_id')->label('Куратор')->dropdownList(Curators::find()->select(['fio'])->indexBy('id')->column(),['prompt'=>'Выберите Куратора']) ?>
+            <?= $form->field($model, 'curators_id')->label('Куратор')->dropdownList(Curators::find()->select(['fio'])->orderBy(['fio' => SORT_ASC])->indexBy('id')->column(),['prompt'=>'Выберите Куратора']) ?>
         
             <div class="form-group">
                 <?= Html::submitButton($btn_title, ['class' => 'btn btn-success']) ?>

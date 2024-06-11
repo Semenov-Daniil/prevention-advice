@@ -29,9 +29,9 @@ use yii\widgets\ActiveForm;
             </div>
 
             <div class="d-flex flex-wrap gap-4">
-                <?= $form->field($model, 'group', ['options' => ['class' => 'form-group flex-1']])->dropdownList(Groups::find()->select(['title'])->indexBy('id')->column(),['prompt'=>'Выберите Группу']) ?>
+                <?= $form->field($model, 'group', ['options' => ['class' => 'form-group flex-1']])->dropdownList(Groups::find()->select(['title'])->orderBy(['title' => SORT_ASC])->indexBy('id')->column(),['prompt'=>'Выберите Группу']) ?>
     
-                <?= $form->field($model, 'curator', ['options' => ['class' => 'form-group flex-1']])->dropdownList(Curators::find()->select(['fio'])->indexBy('id')->column(),['prompt'=>'Выберите Куратора']) ?>
+                <?= $form->field($model, 'curator', ['options' => ['class' => 'form-group flex-1']])->dropdownList(Curators::find()->select(['fio'])->orderBy(['fio' => SORT_ASC])->indexBy('id')->column(),['prompt'=>'Выберите Куратора']) ?>
             </div>
         
             <div class="form-group flex-grow-2">

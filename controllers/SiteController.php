@@ -5,8 +5,10 @@ namespace app\controllers;
 use app\models\Advices;
 use app\models\AdvicesSearch;
 use app\models\AdvicesStudentsSearch;
+use app\models\Roles;
 use app\models\Students;
 use app\models\StudentsSearch;
+use app\models\Users;
 use DateTime;
 use Yii;
 use yii\web\Controller;
@@ -54,6 +56,128 @@ class SiteController extends Controller
         ];
     }
 
+    /**
+     * Lists all Advices models.
+     *
+     * @return string
+     */
+    public function actionIndex()
+    {
+        $searchModel = new AdvicesSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+     /**
+     * Login action.
+     *
+     * @return Response|string
+     */
+    public function actionLogin()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new Users();
+
+        if ($this->request->isPost) {
+            $data = Yii::$app->request->post()['Users'];
+
+            $model->load($data, '');
+            $model->validate();
+
+            if (!$model->hasErrors()) {
+                $user = Users::findOne(['login' => $model->login]);
+
+                if (!empty($user) && $user->validatePassword($model->password)) {
+                    $model = $user;
+                    $model->token = Yii::$app->security->generateRandomString();
+    
+                    while(!$model->save()) {
+                        $model->token = Yii::$app->security->generateRandomString();
+                    }
+
+                    Yii::$app->user->login($model);
+
+                    return $this->goBack();
+                } else {
+                    $model->addError('password', 'Неправильное имя пользователя или пароль.');
+                }
+            }
+        }
+
+        $model->password = '';
+
+        return $this->render('login', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Register action.
+     *
+     * @return Response
+     */
+    public function actionRegister()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new Users();
+        $model->scenario = Users::SCENARIO_REGISTER;
+
+        if ($this->request->isPost) {
+            $data = Yii::$app->request->post()['Users'];
+
+            $model->load($data, '');
+            $model->validate();
+
+            if (!$model->hasErrors()) {
+                $model->roles_id = Roles::findOne(['title' => 'User'])->id;
+
+                $model->token = Yii::$app->security->generateRandomString();
+                while(!$model->validate()) {
+                    $model->token = Yii::$app->security->generateRandomString();
+                }
+
+                $model->password = Yii::$app->getSecurity()->generatePasswordHash($model->password);
+
+                $model->save(false);
+
+                Yii::$app->user->login($model);
+
+                return $this->goHome();
+            }
+        }
+
+        return $this->render('register', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Logout action.
+     *
+     * @return Response
+     */
+    public function actionLogout()
+    {
+        if (!Yii::$app->user->isGuest) {
+            $identity = Yii::$app->user->identity;
+            $user = Users::findOne($identity->id);
+            $user->token = null;
+            $user->save(false);
+            Yii::$app->user->logout();
+        }
+        return $this->goHome();
+    }
+
     public static function dateFormation($date) {
         $formattedDate = (new DateTime($date))->format('j F, Y');
 
@@ -73,22 +197,6 @@ class SiteController extends Controller
         ];
 
         return strtr($formattedDate, $months);
-    }
-
-    /**
-     * Lists all Advices models.
-     *
-     * @return string
-     */
-    public function actionIndex()
-    {
-        $searchModel = new AdvicesSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
     }
 
     public function actionExport($id)

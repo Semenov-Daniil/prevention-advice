@@ -19,7 +19,7 @@ use yii\bootstrap5\Html;
         <?= $form->field($model, 'birthday', ['options' => ['class' => 'flex-1']])->textInput(['type' => 'date']) ?>
     </div>
 
-    <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->indexBy('id')->column(),['prompt'=>'Выберите Группу', 'options' => [$model->groups_id => ['selected' => true]]]) ?>
+    <?= $form->field($model, 'groups_id')->label('Группа')->dropdownList(Groups::find()->select(['title'])->orderBy(['title' => SORT_ASC])->indexBy('id')->column(),['prompt'=>'Выберите Группу', 'options' => [$model->groups_id => ['selected' => true]]]) ?>
     
     <?= $form->field($model, 'reason')->textarea(['rows' => 6]) ?>
 

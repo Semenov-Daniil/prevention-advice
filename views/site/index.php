@@ -2,6 +2,7 @@
 
 use app\models\Advices;
 use app\controllers\SiteController;
+use app\models\Users;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -19,9 +20,11 @@ $this->title = 'Совет Профилактики';
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Создать Совет Профилактики', ['advice/create'], ['class' => 'mt-3 btn btn-success']) ?>
-    </p>
+    <? if (!Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin'): ?>
+        <p>
+            <?= Html::a('Создать Совет Профилактики', ['advice/create'], ['class' => 'mt-3 btn btn-success']) ?>
+        </p>
+    <? endif; ?>
 
     <div class="advices-search">
         <div class="col-lg-5">
@@ -60,7 +63,15 @@ $this->title = 'Совет Профилактики';
                 'controller' => 'advices',
                 'urlCreator' => function ($action, Advices $model, $key, $index, $column) {
                     return Url::toRoute(['advice/' . $action, 'id' => $model->id]);
-                }
+                },
+                'visibleButtons' => [
+                    'update' => function ($model, $key, $index) {
+                        return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
+                    },
+                    'delete' => function ($model, $key, $index) {
+                        return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
+                    },
+                ]
             ],
         ],
     ]); ?>

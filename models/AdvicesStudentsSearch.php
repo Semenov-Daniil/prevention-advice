@@ -49,9 +49,11 @@ class AdvicesStudentsSearch extends AdvicesStudents
         
         $this_advice = AdvicesStudents::find()
             ->select([
-                'id as this_advice', 'students_id',
+                'id as this_advice', 'students_id'
             ])
             ->where(['advices_id' => $advice_id]); 
+
+        $this_advice_date = Advices::findOne($advice_id)->date;
 
         $all_advices_students = AdvicesStudents::find()
             ->select([
@@ -61,23 +63,27 @@ class AdvicesStudentsSearch extends AdvicesStudents
                 '{{%students}}.birthday', 
                 '{{%groups}}.title as group', 
                 '{{%curators}}.fio as curator',
-                'reason' => new \yii\db\Expression('GROUP_CONCAT(reason SEPARATOR \'\n \')'),
-                'result' => new \yii\db\Expression('GROUP_CONCAT(result SEPARATOR \'\n \')'),
-                'protocol' => new \yii\db\Expression('GROUP_CONCAT(protocol SEPARATOR \'\n \')'),
-                'decree' => new \yii\db\Expression('GROUP_CONCAT(decree SEPARATOR \'\n \')'),
-                'remark' => new \yii\db\Expression('GROUP_CONCAT(remark SEPARATOR \'\n \')'),
-                'reprimand' => new \yii\db\Expression('GROUP_CONCAT(reprimand SEPARATOR \'\n \')'),
-                'note' => new \yii\db\Expression('GROUP_CONCAT(note SEPARATOR \'\n \')'),
-                'liquidation_period' => new \yii\db\Expression('GROUP_CONCAT(liquidation_period SEPARATOR \'\n \')'),
-                'memo' => new \yii\db\Expression('GROUP_CONCAT(memo SEPARATOR \'\n \')'),
+                'reason' => new \yii\db\Expression('GROUP_CONCAT(reason SEPARATOR \'\n\')'),
+                'result' => new \yii\db\Expression('GROUP_CONCAT(result SEPARATOR \'\n\')'),
+                'protocol' => new \yii\db\Expression('GROUP_CONCAT(protocol SEPARATOR \'\n\')'),
+                'decree' => new \yii\db\Expression('GROUP_CONCAT(decree SEPARATOR \'\n\')'),
+                'remark' => new \yii\db\Expression('GROUP_CONCAT(remark SEPARATOR \'\n\')'),
+                'reprimand' => new \yii\db\Expression('GROUP_CONCAT(reprimand SEPARATOR \'\n\')'),
+                'note' => new \yii\db\Expression('GROUP_CONCAT(note SEPARATOR \'\n\')'),
+                'liquidation_period' => new \yii\db\Expression('GROUP_CONCAT(liquidation_period SEPARATOR \'\n\')'),
+                'memo' => new \yii\db\Expression('GROUP_CONCAT(memo SEPARATOR \'\n\')'),
             ])
             ->innerJoin('{{%students}}', '{{%students}}.id = {{%advices_students}}.students_id')
+            ->innerJoin('{{%advices}}', '{{%advices}}.id = {{%advices_students}}.advices_id')
             ->leftJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
             ->leftJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
             ->innerJoin(['this_advice' => $this_advice], 'this_advice.students_id = {{%advices_students}}.students_id')
             ->where(['in', '{{%advices_students}}.students_id', $students])
+            ->andWhere(['<=', 'date', $this_advice_date])
             ->groupBy(['{{%advices_students}}.students_id', 'this_advice'])
             ->asArray();
+
+        // var_dump('<pre>', $all_advices_students->all());die;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $all_advices_students,
@@ -142,11 +148,16 @@ class AdvicesStudentsSearch extends AdvicesStudents
 
         $dataProvider = new ActiveDataProvider([
             'query' => $all_advices_students,
+            'sort' => [
+                'defaultOrder' => [
+                    'date' => SORT_DESC,
+                ]
+            ]
         ]);
 
         $dataProvider->sort->attributes['date'] = [
-            'date' => ['date' => SORT_ASC],
-            'date' => ['date' => SORT_DESC],
+            'asc' => ['date' => SORT_ASC],
+            'desc' => ['date' => SORT_DESC],
         ];
 
         $this->load($params);
@@ -158,42 +169,45 @@ class AdvicesStudentsSearch extends AdvicesStudents
         return $dataProvider;
     }
 
-    public function exportData($id)
+    public function exportData($advice_id)
     {
         $students = AdvicesStudents::find()
-        ->select([
-            'students_id'
-        ])
-        ->where(['advices_id' => $id]);
-    
+            ->select([
+                'students_id'
+            ])
+            ->where(['advices_id' => $advice_id]);
+        
         $this_advice = AdvicesStudents::find()
             ->select([
-                'id as this_advice', 'students_id',
+                'id as this_advice', 'students_id'
             ])
-            ->where(['advices_id' => $id]); 
+            ->where(['advices_id' => $advice_id]); 
+
+        $this_advice_date = Advices::findOne($advice_id)->date;
 
         $all_advices_students = AdvicesStudents::find()
             ->select([
-                "CONCAT('') as id",
                 '{{%students}}.fio as fio', 
                 '{{%students}}.birthday', 
                 '{{%groups}}.title as group', 
                 '{{%curators}}.fio as curator',
-                'reason' => new \yii\db\Expression('GROUP_CONCAT(reason SEPARATOR \'\n \')'),
-                'result' => new \yii\db\Expression('GROUP_CONCAT(result SEPARATOR \'\n \')'),
-                'protocol' => new \yii\db\Expression('GROUP_CONCAT(protocol SEPARATOR \'\n \')'),
-                'decree' => new \yii\db\Expression('GROUP_CONCAT(decree SEPARATOR \'\n \')'),
-                'remark' => new \yii\db\Expression('GROUP_CONCAT(remark SEPARATOR \'\n \')'),
-                'reprimand' => new \yii\db\Expression('GROUP_CONCAT(reprimand SEPARATOR \'\n \')'),
-                'note' => new \yii\db\Expression('GROUP_CONCAT(note SEPARATOR \'\n \')'),
-                'liquidation_period' => new \yii\db\Expression('GROUP_CONCAT(liquidation_period SEPARATOR \'\n \')'),
-                'memo' => new \yii\db\Expression('GROUP_CONCAT(memo SEPARATOR \'\n \')'),
+                'reason' => new \yii\db\Expression('GROUP_CONCAT(reason SEPARATOR \'\n\')'),
+                'result' => new \yii\db\Expression('GROUP_CONCAT(result SEPARATOR \'\n\')'),
+                'protocol' => new \yii\db\Expression('GROUP_CONCAT(protocol SEPARATOR \'\n\')'),
+                'decree' => new \yii\db\Expression('GROUP_CONCAT(decree SEPARATOR \'\n\')'),
+                'remark' => new \yii\db\Expression('GROUP_CONCAT(remark SEPARATOR \'\n\')'),
+                'reprimand' => new \yii\db\Expression('GROUP_CONCAT(reprimand SEPARATOR \'\n\')'),
+                'note' => new \yii\db\Expression('GROUP_CONCAT(note SEPARATOR \'\n\')'),
+                'liquidation_period' => new \yii\db\Expression('GROUP_CONCAT(liquidation_period SEPARATOR \'\n\')'),
+                'memo' => new \yii\db\Expression('GROUP_CONCAT(memo SEPARATOR \'\n\')'),
             ])
             ->innerJoin('{{%students}}', '{{%students}}.id = {{%advices_students}}.students_id')
+            ->innerJoin('{{%advices}}', '{{%advices}}.id = {{%advices_students}}.advices_id')
             ->leftJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
             ->leftJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
             ->innerJoin(['this_advice' => $this_advice], 'this_advice.students_id = {{%advices_students}}.students_id')
             ->where(['in', '{{%advices_students}}.students_id', $students])
+            ->andWhere(['<=', 'date', $this_advice_date])
             ->groupBy(['{{%advices_students}}.students_id', 'this_advice'])
             ->asArray()
             ->all();
@@ -205,7 +219,7 @@ class AdvicesStudentsSearch extends AdvicesStudents
                 $formattedDate = date_format($date, 'd.m.Y');
                 $students['birthday'] = $formattedDate;
             }
-            $students['id'] = $id_str;
+            array_unshift($students, $id_str);
             $id_str++;
             $all_advices_students[$key] = $students;
         }  

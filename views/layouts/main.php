@@ -4,6 +4,7 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
+use app\models\Users;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
@@ -36,13 +37,27 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         'brandUrl' => Yii::$app->homeUrl,
         'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top']
     ]);
+
+    if (Yii::$app->user->isGuest) {
+        $item = [
+            ['label' => 'Регистрация', 'url' => ['/site/register'], 'options' => ['class' => 'ml-auto']],
+            ['label' => 'Вход', 'url' => ['/site/login']]
+        ];
+    } else {
+        if(Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin') {
+            $item = [
+                ['label' => 'Кураторы', 'url' => ['/curator/index']],
+                ['label' => 'Группы', 'url' => ['/group/index']],
+                ['label' => 'Студенты', 'url' => ['/student/index']],
+            ];
+        }
+
+        $item[] = ['label' => 'Выход (' . Yii::$app->user->identity->login . ')', 'url' => ['/site/logout'], 'options' => ['class' => 'ml-auto']];
+    }
+
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav'],
-        'items' => [
-            ['label' => 'Кураторы', 'url' => ['/curator/index']],
-            ['label' => 'Группы', 'url' => ['/group/index']],
-            ['label' => 'Студенты', 'url' => ['/student/index']],
-        ]
+        'options' => ['class' => 'navbar-nav w-100 d-flex'],
+        'items' => $item
     ]);
     NavBar::end();
     ?>
