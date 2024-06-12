@@ -35,22 +35,6 @@ class AdviceController extends Controller
     }
 
     /**
-     * Lists all Advices models.
-     *
-     * @return string
-     */
-    public function actionIndex()
-    {
-        $searchModel = new AdvicesSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
      * Displays a single Advices model.
      * @param int $id ID
      * @return string

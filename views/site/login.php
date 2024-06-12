@@ -36,8 +36,6 @@ $this->title = 'Вход';
                 </div>
             </div>
 
-            <?= Html::a('Регистрация', 'register', ['class' => 'btn btn-primary', 'name' => 'register-button'])?>
-
             <?php ActiveForm::end(); ?>
 
         </div>

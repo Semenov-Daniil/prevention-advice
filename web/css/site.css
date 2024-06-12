@@ -110,3 +110,18 @@ input[type='date'] {
 .w-f-c {
     width: fit-content;
 }
+
+.table-wrapp {
+    position: relative;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: clamp(500px, 80vw, 1920px);
+
+    overflow: scroll;
+}
+
+.table-wrapp .summary {
+    text-align: center;
+}

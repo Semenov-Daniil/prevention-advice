@@ -2,6 +2,7 @@
 
 use app\models\Curators;
 use app\models\Groups;
+use app\models\Users;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -34,9 +35,19 @@ use yii\widgets\ActiveForm;
                 <?= $form->field($model, 'curator', ['options' => ['class' => 'form-group flex-1']])->dropdownList(Curators::find()->select(['fio'])->orderBy(['fio' => SORT_ASC])->indexBy('id')->column(),['prompt'=>'Выберите Куратора']) ?>
             </div>
         
-            <div class="form-group flex-grow-2">
-                <?= Html::submitButton('Поиск', ['class' => 'btn btn-primary']) ?>
-                <?= Html::resetButton('Сбросить', ['class' => 'btn btn-outline-secondary', 'onclick' => "window.location.replace(window.location.pathname + '?id=" . $options['id'] . "');"]) ?>
+            <div class="d-flex justify-content-between">
+                <div class="form-group">
+                    <?= Html::submitButton('Поиск', ['class' => 'btn btn-primary']) ?>
+                    <?= Html::resetButton('Сбросить', ['class' => 'btn btn-outline-secondary', 'onclick' => "window.location.replace(window.location.pathname + '?id=" . $options['id'] . "');"]) ?>
+                </div>
+    
+                <div class="form-group">
+                    <? if (!Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin'): ?>
+                        <?=Html::a('Добавить запись', ['advice-student/create', 'advice' => Yii::$app->request->get('id')], ['class' => 'btn btn-success']);?>
+                    <? endif; ?>
+                
+                    <?=Html::a('Экспортировать в CSV', ['site/export', 'id' => Yii::$app->request->get('id')], ['class' => 'btn btn-outline-secondary']);?>
+                </div>
             </div>
         
             <?php ActiveForm::end(); ?>

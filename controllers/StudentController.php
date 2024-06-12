@@ -42,6 +42,10 @@ class StudentController extends Controller
      */
     public function actionIndex()
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+
         $searchModel = new StudentsSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -59,6 +63,10 @@ class StudentController extends Controller
      */
     public function actionView($id)
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+        
         $searchModel = new AdvicesStudentsSearch();
         $dataProvider = $searchModel->searchAdvice($id, $this->request->queryParams);
 

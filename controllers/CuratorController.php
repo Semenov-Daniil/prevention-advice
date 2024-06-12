@@ -40,6 +40,10 @@ class CuratorController extends Controller
      */
     public function actionIndex()
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+
         $searchModel = new CuratorsSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -57,6 +61,10 @@ class CuratorController extends Controller
      */
     public function actionView($id)
     {
+        if (Yii::$app->user->isGuest || Users::findOne(Yii::$app->user->id)->getTitleRoles() !== 'Admin') {
+            return $this->goHome();
+        }
+        
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);

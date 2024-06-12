@@ -49,6 +49,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                 ['label' => 'Кураторы', 'url' => ['/curator/index']],
                 ['label' => 'Группы', 'url' => ['/group/index']],
                 ['label' => 'Студенты', 'url' => ['/student/index']],
+                ['label' => 'Пользователи', 'url' => ['/user/index']],
             ];
         }
 

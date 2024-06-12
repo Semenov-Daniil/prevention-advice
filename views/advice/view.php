@@ -7,6 +7,7 @@ use app\models\Users;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\widgets\ListView;
 
 /** @var yii\web\View $this */
 /** @var app\models\Advices $dataAdvice */
@@ -50,7 +51,7 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
 
     <div>
         <?= GridView::widget([
-            'options' => ['class' => 'd-flex flex-column align-items-center'],
+            'options' => ['class' => 'table-wrapp'],
             'dataProvider' => $dataStudents,
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
@@ -89,15 +90,12 @@ $this->params['breadcrumbs'][] = SiteController::dateFormation($dataAdvice->date
                         'delete' => function ($model, $key, $index) {
                             return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
                         },
+                        'view' => function ($model, $key, $index) {
+                            return !Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin';
+                        },
                     ]
                 ],
             ],
         ]); ?>
-    
-        <? if (!Yii::$app->user->isGuest && Users::findOne(Yii::$app->user->id)->getTitleRoles() == 'Admin'): ?>
-            <?=Html::a('Добавить запись', ['advice-student/create', 'advice' => Yii::$app->request->get('id')], ['class' => 'btn btn-primary']);?>
-        <? endif; ?>
-    
-        <?=Html::a('Экспортировать в CSV', ['site/export', 'id' => Yii::$app->request->get('id')], ['class' => 'btn btn-outline-secondary']);?>
     </div>
 </div>

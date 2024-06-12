@@ -22,6 +22,8 @@ class Users extends ActiveRecord implements IdentityInterface
 {
     const SCENARIO_REGISTER = 'register';
 
+    public $role;
+
     /**
      * {@inheritdoc}
      */
@@ -62,6 +64,7 @@ class Users extends ActiveRecord implements IdentityInterface
             'login' => 'Логин',
             'password' => 'Пароль',
             'roles_id' => 'Роль',
+            'role' => 'Роль',
             'token' => 'Токен',
         ];
     }
