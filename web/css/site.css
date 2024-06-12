@@ -102,3 +102,11 @@ input[type='date'] {
 .attention-text {
     color: #c55;
 }
+
+.ml-auto {
+    margin-left: auto;
+}
+
+.w-f-c {
+    width: fit-content;
+}
