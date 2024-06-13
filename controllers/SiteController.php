@@ -234,6 +234,8 @@ class SiteController extends Controller
             $column++;
         }
 
+        $sheet->getRowDimension(2)->setRowHeight(40);
+
         $row = 3;
         foreach ($dataStudents as $rowData) {
             $column = 'A';

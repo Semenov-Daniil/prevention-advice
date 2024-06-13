@@ -45,15 +45,11 @@ class UsersSearch extends Users
                 '{{%users}}.id', 'login', 'roles_id', 'title as role'
             ])
             ->innerJoin('{{%roles}}', '{{%roles}}.id = {{%users}}.roles_id')
-            ->where("{{%users}}.id != $id");
+            ->where("{{%users}}.id != $id")
+            ->orderBy(['login' => SORT_ASC]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => [
-                'defaultOrder' => [
-                    'login' => SORT_ASC,
-                ]
-            ]
         ]);
 
         $dataProvider->sort->attributes['role'] = [

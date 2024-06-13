@@ -44,17 +44,13 @@ class GroupsSearch extends Groups
             ->select([
                 '{{%groups}}.id', 'title', 'curators_id', '{{%curators}}.fio as curator_fio'
             ])
-            ->leftJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id');
+            ->leftJoin('{{%curators}}', '{{%curators}}.id = {{%groups}}.curators_id')
+            ->orderBy(['title' => SORT_ASC]);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => [
-                'defaultOrder' => [
-                    'title' => SORT_ASC,
-                ]
-            ]
         ]);
 
         $dataProvider->sort->attributes['curator_fio'] = [

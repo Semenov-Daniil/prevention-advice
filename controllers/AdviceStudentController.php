@@ -125,7 +125,7 @@ class AdviceStudentController extends Controller
             }
             
             if ($model->save()) {
-                (Yii::$app->session)->destroy();
+                (Yii::$app->session)['advice_students_data'] = null;
                 return $this->redirect(['advice/view', 'id' => $advice_id]);
             }
         }
@@ -148,6 +148,8 @@ class AdviceStudentController extends Controller
 
         $data = $this->request->isPost ? ($this->request->post())['AdvicesStudents'] : (Yii::$app->session)['advice_students_data'];
 
+        // var_dump($data);die;
+
         if ($model->load($data, '')) { 
             if (empty($student = Students::find()->where(['id' => $model->students_id, 'fio' => $data['fio'], 'birthday' => $data['birthday'], 'groups_id' => $data['groups_id']])->asArray()->all())) {
                 $student = new Students();
@@ -161,7 +163,7 @@ class AdviceStudentController extends Controller
             $model->students_id = $students_id;
 
             if ($model->save()) {
-                (Yii::$app->session)->destroy();
+                (Yii::$app->session)['advice_students_data'] = null;
                 return $this->redirect(['advice/view', 'id' => $model->advices_id]);
             }
         }

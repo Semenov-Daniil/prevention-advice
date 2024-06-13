@@ -44,17 +44,13 @@ class StudentsSearch extends Students
             ->select([
                 '{{%students}}.id', 'fio', 'birthday', '{{%groups}}.title as groups_title'
             ])
-            ->innerJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id');
+            ->innerJoin('{{%groups}}', '{{%groups}}.id = {{%students}}.groups_id')
+            ->orderBy(['fio' => SORT_ASC]);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => [
-                'defaultOrder' => [
-                    'fio' => SORT_ASC,
-                ]
-            ]
         ]);
 
         $dataProvider->sort->attributes['groups_title'] = [

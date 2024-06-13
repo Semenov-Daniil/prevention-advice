@@ -40,7 +40,7 @@ class AdvicesSearch extends Advices
      */
     public function search($params)
     {
-        $query = Advices::find();
+        $query = Advices::find()->orderBy(['date' => SORT_DESC]);
 
         // add conditions that should always apply here
 
@@ -49,11 +49,6 @@ class AdvicesSearch extends Advices
             'pagination' => [
                 'pageSize' => 20,
             ],
-            'sort' => [
-                'defaultOrder' => [
-                    'date' => SORT_DESC,
-                ]
-            ]
         ]);
 
         $this->load($params);
