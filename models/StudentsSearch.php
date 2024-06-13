@@ -51,6 +51,9 @@ class StudentsSearch extends Students
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
         ]);
 
         $dataProvider->sort->attributes['groups_title'] = [

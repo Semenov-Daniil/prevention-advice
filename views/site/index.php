@@ -50,6 +50,7 @@ $this->title = 'Совет Профилактики';
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'pager' => ['class' => \yii\bootstrap5\LinkPager::class],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             [

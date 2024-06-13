@@ -98,15 +98,17 @@ class SiteController extends Controller
                     $model = $user;
                     $model->token = Yii::$app->security->generateRandomString();
     
-                    while(!$model->save()) {
+                    while(!$model->validate() && $model->errors()['token']) {
                         $model->token = Yii::$app->security->generateRandomString();
                     }
+
+                    $model->save();
 
                     Yii::$app->user->login($model);
 
                     return $this->goBack();
                 } else {
-                    $model->addError('password', 'Неправильное имя пользователя или пароль.');
+                    Yii::$app->session->setFlash('error', "User not saved.");
                 }
             }
         }
@@ -121,7 +123,7 @@ class SiteController extends Controller
     /**
      * Register action.
      *
-     * @return Response
+     * @return Response|string
      */
     public function actionRegister()
     {
@@ -140,9 +142,9 @@ class SiteController extends Controller
 
             if (!$model->hasErrors()) {
                 $model->roles_id = Roles::findOne(['title' => 'User'])->id;
-
                 $model->token = Yii::$app->security->generateRandomString();
-                while(!$model->validate()) {
+
+                while(!$model->validate() && $model->errors()['token']) {
                     $model->token = Yii::$app->security->generateRandomString();
                 }
 
@@ -223,6 +225,7 @@ class SiteController extends Controller
             ->setBold(true)
             ->setSize(18);
         $sheet->mergeCells('A1:' . $columnLetter . '1');
+        $sheet->getRowDimension(1)->setRowHeight(30);
 
         $column = 'A';
         foreach ($table_title as $header) {

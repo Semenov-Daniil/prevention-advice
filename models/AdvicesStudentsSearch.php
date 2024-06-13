@@ -144,15 +144,14 @@ class AdvicesStudentsSearch extends AdvicesStudents
             ])
             ->innerJoin('{{%advices}}', '{{%advices}}.id = {{%advices_students}}.advices_id')
             ->where(['students_id' => $students_id])
+            ->orderBy(['date' => SORT_DESC])
             ->asArray();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $all_advices_students,
-            'sort' => [
-                'defaultOrder' => [
-                    'date' => SORT_DESC,
-                ]
-            ]
+            'pagination' => [
+                'pageSize' => 20,
+            ],
         ]);
 
         $dataProvider->sort->attributes['date'] = [

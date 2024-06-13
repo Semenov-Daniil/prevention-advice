@@ -50,6 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'options' => ['class' => 'table-wrapp'],
         'dataProvider' => $dataProvider,
+        'pager' => ['class' => \yii\bootstrap5\LinkPager::class],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             [
