@@ -115,11 +115,12 @@ input[type='date'] {
     position: relative;
     left: 50%;
 
-    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+        transform: translateX(-50%);
 
     width: clamp(500px, 80vw, 1920px);
 
-    overflow: scroll;
+    overflow-x: auto;
 }
 
 .table-wrapp .summary {
